@@ -9,6 +9,7 @@ import PlayerList from '@/components/PlayerList';
 import CardSelector from '@/components/CardSelector';
 import GameControls from '@/components/GameControls';
 import AlertBanner from '@/components/AlertBanner';
+import RemovedFromRoom from '@/components/RemovedFromRoom';
 import { CardValue } from '@/types/game';
 
 export default function RoomPage() {
@@ -98,10 +99,24 @@ export default function RoomPage() {
     resetGame(roomCode);
   };
 
+  // Get stored player name for removed from room message
+  const storedPlayerName = typeof window !== 'undefined'
+    ? localStorage.getItem(`player_${roomCode}_name`) || 'Player'
+    : 'Player';
+
   return (
     <>
+      {/* Removed from Room Overlay */}
+      {gameState.removedFromRoom && (
+        <RemovedFromRoom
+          roomCode={roomCode}
+          playerName={storedPlayerName}
+          reason={gameState.removedFromRoom.reason}
+        />
+      )}
+
       {/* Alert Banners */}
-      {connectionStatus === 'disconnected' && hasJoined && (
+      {connectionStatus === 'disconnected' && hasJoined && !gameState.removedFromRoom && (
         <AlertBanner
           message="Connection lost. Please check your internet connection."
           type="error"

@@ -20,6 +20,7 @@ import {
   CardsRevealedPayload,
   GameResetPayload,
   ErrorPayload,
+  RemovedFromRoomPayload,
 } from '@/types/socket-events';
 import {
   addPlayer,
@@ -163,9 +164,18 @@ export function setupSocketHandlers(io: SocketIOServer): void {
         const targetSocket = io.sockets.sockets.get(playerId);
 
         if (targetSocket) {
-          // Force disconnect the removed player
-          targetSocket.leave(roomCode);
-          targetSocket.disconnect(true);
+          // Notify the removed player before disconnecting
+          const removedPayload: RemovedFromRoomPayload = {
+            roomCode,
+            reason: socket.id === playerId ? 'self' : 'other',
+          };
+          targetSocket.emit(ServerEvents.REMOVED_FROM_ROOM, removedPayload);
+
+          // Small delay to ensure the message is received before disconnect
+          setTimeout(() => {
+            targetSocket.leave(roomCode);
+            targetSocket.disconnect(true);
+          }, 100);
         }
 
         // Notify remaining players

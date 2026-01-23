@@ -13,6 +13,7 @@ import {
   CardsRevealedPayload,
   GameResetPayload,
   ErrorPayload,
+  RemovedFromRoomPayload,
 } from '@/types/socket-events';
 import { Player } from '@/types/game';
 
@@ -21,6 +22,7 @@ interface GameState {
   isRevealed: boolean;
   currentPlayerId: string | null;
   error: string | null;
+  removedFromRoom: RemovedFromRoomPayload | null;
 }
 
 export function useGameState(socket: Socket | null) {
@@ -29,6 +31,7 @@ export function useGameState(socket: Socket | null) {
     isRevealed: false,
     currentPlayerId: null,
     error: null,
+    removedFromRoom: null,
   });
 
   useEffect(() => {
@@ -42,6 +45,7 @@ export function useGameState(socket: Socket | null) {
         isRevealed: payload.isRevealed,
         currentPlayerId: payload.currentPlayerId,
         error: null,
+        removedFromRoom: null,
       });
     });
 
@@ -105,6 +109,15 @@ export function useGameState(socket: Socket | null) {
       }));
     });
 
+    // Removed from room
+    socket.on(ServerEvents.REMOVED_FROM_ROOM, (payload: RemovedFromRoomPayload) => {
+      console.log('Removed from room:', payload);
+      setGameState((prev) => ({
+        ...prev,
+        removedFromRoom: payload,
+      }));
+    });
+
     // Cleanup listeners on unmount
     return () => {
       socket.off(ServerEvents.ROOM_STATE);
@@ -114,6 +127,7 @@ export function useGameState(socket: Socket | null) {
       socket.off(ServerEvents.CARDS_REVEALED);
       socket.off(ServerEvents.GAME_RESET);
       socket.off(ServerEvents.ERROR);
+      socket.off(ServerEvents.REMOVED_FROM_ROOM);
     };
   }, [socket]);
 

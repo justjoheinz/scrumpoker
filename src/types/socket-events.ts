@@ -67,6 +67,11 @@ export interface ErrorPayload {
   code?: string;
 }
 
+export interface RemovedFromRoomPayload {
+  roomCode: string;
+  reason: 'self' | 'other';  // 'self' if they removed themselves, 'other' if removed by someone else
+}
+
 // ========== Callback Types ==========
 
 export interface JoinRoomResponse {
@@ -93,4 +98,5 @@ export const ServerEvents = {
   CARDS_REVEALED: 'cards-revealed',
   GAME_RESET: 'game-reset',
   ERROR: 'error',
+  REMOVED_FROM_ROOM: 'removed-from-room',
 } as const;

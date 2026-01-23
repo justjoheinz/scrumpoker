@@ -73,6 +73,8 @@ npm run dev
 
 - Click the trash icon next to any player name to remove them from the room
 - Players can remove themselves or others
+- When removed, players see a clear message explaining what happened
+- Removed players can easily rejoin using the provided room link
 
 ## Architecture
 
