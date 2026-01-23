@@ -5,6 +5,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 interface NavigationProps {
   roomInfo?: {
@@ -22,9 +23,9 @@ export default function Navigation({ roomInfo }: NavigationProps) {
   return (
     <nav className="teal">
       <div className="nav-wrapper container">
-        <a href="/" className="brand-logo">
+        <Link href="/" className="brand-logo">
           Scrum Poker
-        </a>
+        </Link>
 
         {isInRoom && roomInfo && (
           <ul className="right">
