@@ -24,8 +24,8 @@ export default function CardSelector({
         {disabled && (
           <p className="grey-text">
             <i className="material-icons tiny">lock</i> <strong>Card selection disabled (cards revealed)</strong>
-          </p>
-        )}
+          </p>)}
+        {!disabled && ( <p>&nbsp;</p>)}
 
         <div
           style={{
@@ -38,9 +38,7 @@ export default function CardSelector({
           {CARD_VALUES.map((card) => (
             <div
               key={card}
-              className={`poker-card card ${selectedCard === card ? 'selected' : ''} ${
-                disabled ? '' : ''
-              }`}
+              className={`poker-card card ${selectedCard === card ? 'selected' : ''}`}
               onClick={() => {
                 if (disabled) return;
                 // Toggle: if clicking selected card, unselect it (pass null)

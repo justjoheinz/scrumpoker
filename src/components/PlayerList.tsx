@@ -73,8 +73,7 @@ export default function PlayerList({
     <div className="card">
       <div className="card-content">
         <span className="card-title">
-          Players 
-          {isRevealed && <span className="badge blue white-text">Revealed</span>}
+          Players
         </span>
 
         {players.length === 0 ? (
