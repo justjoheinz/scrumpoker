@@ -15,19 +15,56 @@ main {
   min-height: calc(100vh - 64px);
 }
 
-/* Navigation room info */
+/* Navigation - always left-align brand logo (override Materialize centering) */
+nav .brand-logo {
+  left: 0.5rem !important;
+  transform: none !important;
+}
+
 nav .right li {
   line-height: 64px;
 }
 
-/* Responsive navigation - hide details on small screens */
-@media only screen and (max-width: 600px) {
+/* Responsive navigation */
+@media only screen and (max-width: 768px) {
+  nav .nav-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.5rem 15px;
+  }
+
+  nav .nav-wrapper .brand-logo {
+    position: static;
+    left: auto !important;
+    line-height: 2rem;
+    font-size: 1.5rem;
+  }
+
+  nav .nav-wrapper .right {
+    position: static;
+    float: none;
+    margin: 0;
+  }
+
+  nav .right li {
+    line-height: 2rem;
+    padding: 0.25rem 0;
+  }
+
   nav .right li span {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 
   nav .right li span i {
     font-size: 1rem !important;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  nav .right li {
+    flex-wrap: wrap;
+    gap: 10px !important;
   }
 }
 

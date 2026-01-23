@@ -21,6 +21,10 @@ npm start
 # Linting
 npm run lint
 
+# Testing
+npm test          # Watch mode
+npm run test:run  # Single run
+
 # Docker
 docker-compose build
 docker-compose up -d
@@ -200,6 +204,27 @@ To test multiplayer functionality:
 4. Open `http://localhost:3000/room/ABC123` in incognito/different browser
 5. Join with different name
 6. Both clients will see real-time updates
+
+## Unit Tests
+
+Uses **Vitest** with TypeScript and path alias support. Tests are located in `tests/` mirroring the `src/` structure.
+
+```
+tests/
+├── types/
+│   ├── game.test.ts          # Card values, constants, CARD_ORDER
+│   └── socket-events.test.ts # Event name constants
+└── lib/game/
+    ├── room-manager.test.ts  # Room state management
+    └── game-logic.test.ts    # Business logic (sorting, reveal rules)
+```
+
+**Test strategy**: Tests use the actual room-manager state (no mocking). Each test uses a unique room code to prevent interference between tests.
+
+**Adding tests for new functionality:**
+1. Create test file in `tests/` matching the source path
+2. Use `uniqueRoomCode()` pattern for tests that modify room state
+3. Import from `@/` paths (configured in `vitest.config.ts`)
 
 ## Common Modifications
 

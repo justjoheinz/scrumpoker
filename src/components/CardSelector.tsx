@@ -23,7 +23,7 @@ export default function CardSelector({
         <span className="card-title">Select Your Card</span>
         {disabled && (
           <p className="grey-text">
-            <i className="material-icons tiny">lock</i> Card selection disabled (cards revealed)
+            <i className="material-icons tiny">lock</i> <strong>Card selection disabled (cards revealed)</strong>
           </p>
         )}
 
