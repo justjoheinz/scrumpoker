@@ -1,0 +1,54 @@
+/**
+ * Navigation - Dynamic navigation bar that shows room info when in a room
+ */
+
+'use client';
+
+import { usePathname } from 'next/navigation';
+import { ReactNode } from 'react';
+
+interface NavigationProps {
+  roomInfo?: {
+    roomCode: string;
+    playerName?: string;
+    playerCount: number;
+  };
+}
+
+export default function Navigation({ roomInfo }: NavigationProps) {
+  const pathname = usePathname();
+  const isInRoom = pathname?.startsWith('/room/');
+
+  return (
+    <nav className="teal">
+      <div className="nav-wrapper container">
+        <a href="/" className="brand-logo">
+          Scrum Poker
+        </a>
+
+        {isInRoom && roomInfo && (
+          <ul className="right">
+            <li style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingRight: '20px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="material-icons" style={{ fontSize: '1.2rem' }}>meeting_room</i>
+                <strong>{roomInfo.roomCode}</strong>
+              </span>
+
+              {roomInfo.playerName && (
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="material-icons" style={{ fontSize: '1.2rem' }}>person</i>
+                  {roomInfo.playerName}
+                </span>
+              )}
+
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="material-icons" style={{ fontSize: '1.2rem' }}>group</i>
+                {roomInfo.playerCount}
+              </span>
+            </li>
+          </ul>
+        )}
+      </div>
+    </nav>
+  );
+}

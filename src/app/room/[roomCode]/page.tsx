@@ -10,6 +10,7 @@ import CardSelector from '@/components/CardSelector';
 import GameControls from '@/components/GameControls';
 import AlertBanner from '@/components/AlertBanner';
 import RemovedFromRoom from '@/components/RemovedFromRoom';
+import Navigation from '@/components/Navigation';
 import { CardValue } from '@/types/game';
 
 export default function RoomPage() {
@@ -104,8 +105,19 @@ export default function RoomPage() {
     ? localStorage.getItem(`player_${roomCode}_name`) || 'Player'
     : 'Player';
 
+  // Get current player name for navigation
+  const currentPlayerName = currentPlayer?.name;
+
   return (
     <>
+      <Navigation
+        roomInfo={{
+          roomCode,
+          playerName: currentPlayerName,
+          playerCount: gameState.players.length,
+        }}
+      />
+
       {/* Removed from Room Overlay */}
       {gameState.removedFromRoom && (
         <RemovedFromRoom
@@ -149,34 +161,10 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="container">
-        <div className="row">
-          <div className="col s12">
-            {/* Room Header */}
-            <div className="card">
-              <div className="card-content">
-                <span className="card-title">
-                  Room: {roomCode}
-                  {hasJoined && gameState.currentPlayerId && (
-                    <span style={{ fontSize: '1rem', marginLeft: '20px', color: '#666' }}>
-                      {gameState.players.find((p) => p.id === gameState.currentPlayerId)?.name}
-                    </span>
-                  )}
-                </span>
-                <p>Players: {gameState.players.length}</p>
-              </div>
-            </div>
-
-            {/* Player List */}
-            {hasJoined && (
-              <PlayerList
-                players={gameState.players}
-                currentPlayerId={gameState.currentPlayerId}
-                isRevealed={gameState.isRevealed}
-                onRemovePlayer={handleRemovePlayer}
-              />
-            )}
-
+      <main>
+        <div className="container">
+          <div className="row">
+            <div className="col s12">
             {/* Card Selector */}
             {hasJoined && (
               <CardSelector
@@ -196,9 +184,19 @@ export default function RoomPage() {
                 onReset={handleReset}
               />
             )}
+            {/* Player List */}
+            {hasJoined && (
+              <PlayerList
+                players={gameState.players}
+                currentPlayerId={gameState.currentPlayerId}
+                isRevealed={gameState.isRevealed}
+                onRemovePlayer={handleRemovePlayer}
+              />
+            )}
           </div>
         </div>
-      </div>
+        </div>
+      </main>
     </>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { nanoid } from 'nanoid';
+import Navigation from '@/components/Navigation';
 
 export default function Home() {
   const router = useRouter();
@@ -39,15 +40,18 @@ export default function Home() {
   };
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col s12 m8 offset-m2 l6 offset-l3">
-          <div className="card">
-            <div className="card-content">
-              <span className="card-title">Welcome to Scrum Poker</span>
-              <p>Real-time estimation tool for agile teams</p>
-            </div>
-          </div>
+    <>
+      <Navigation />
+      <main>
+        <div className="container">
+          <div className="row">
+            <div className="col s12 m8 offset-m2 l6 offset-l3">
+              <div className="card">
+                <div className="card-content">
+                  <span className="card-title">Welcome to Scrum Poker</span>
+                  <p>Real-time estimation tool for agile teams</p>
+                </div>
+              </div>
 
           {/* Create Room Card */}
           <div className="card">
@@ -104,6 +108,8 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </div>
+        </div>
+      </main>
+    </>
   );
 }

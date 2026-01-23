@@ -31,14 +31,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <nav className="teal">
-          <div className="nav-wrapper container">
-            <a href="/" className="brand-logo">
-              Scrum Poker
-            </a>
-          </div>
-        </nav>
-        <main>{children}</main>
+        {children}
       </body>
     </html>
   );
