@@ -19,7 +19,7 @@ export default function GameControls({
   onReveal,
   onReset,
 }: GameControlsProps) {
-  const canReveal = !isRevealed && playersWithCards >= 2 && totalPlayers >= 2;
+  const canReveal = !isRevealed && playersWithCards >= 1;
   const canReset = isRevealed;
 
   return (
@@ -57,10 +57,9 @@ export default function GameControls({
             <p className="grey-text">
               <i className="material-icons tiny">info</i>{' '}
               {playersWithCards}/{totalPlayers} players have selected cards
-              {!canReveal && totalPlayers >= 2 && (
-                <span> - Need at least 2 players with cards to reveal</span>
+              {!canReveal && (
+                <span> - Need at least 1 player with a card to reveal</span>
               )}
-              {totalPlayers < 2 && <span> - Need at least 2 players in room</span>}
             </p>
           )}
 

@@ -55,6 +55,7 @@ nav .right li {
 
 .poker-card.selected {
   border: 3px solid #26a69a;
+  background-color: #e0f2f1;  /* Light teal background for selection */
   transform: translateY(-5px);
 }
 

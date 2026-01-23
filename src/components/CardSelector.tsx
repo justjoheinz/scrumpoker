@@ -8,7 +8,7 @@ import { CARD_VALUES, CardValue } from '@/types/game';
 
 interface CardSelectorProps {
   selectedCard: CardValue | null;
-  onSelectCard: (card: CardValue) => void;
+  onSelectCard: (card: CardValue | null) => void;
   disabled: boolean;
 }
 
@@ -41,7 +41,11 @@ export default function CardSelector({
               className={`poker-card card ${selectedCard === card ? 'selected' : ''} ${
                 disabled ? '' : ''
               }`}
-              onClick={() => !disabled && onSelectCard(card)}
+              onClick={() => {
+                if (disabled) return;
+                // Toggle: if clicking selected card, unselect it (pass null)
+                onSelectCard(selectedCard === card ? null : card);
+              }}
               style={{
                 opacity: disabled ? 0.5 : 1,
                 cursor: disabled ? 'not-allowed' : 'pointer',
@@ -53,12 +57,6 @@ export default function CardSelector({
             </div>
           ))}
         </div>
-
-        {selectedCard && !disabled && (
-          <p style={{ marginTop: '20px', color: '#26a69a' }}>
-            <i className="material-icons tiny">check_circle</i> You selected: <strong>{selectedCard}</strong>
-          </p>
-        )}
       </div>
     </div>
   );

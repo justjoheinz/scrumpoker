@@ -15,7 +15,7 @@ export interface JoinRoomPayload {
 
 export interface SelectCardPayload {
   roomCode: string;
-  card: CardValue;
+  card: CardValue | null;  // null means unselect
 }
 
 export interface RevealCardsPayload {
@@ -52,6 +52,7 @@ export interface PlayerLeftPayload {
 export interface CardSelectedPayload {
   playerId: string;
   hasCard: boolean;  // true if card selected, but value hidden until reveal
+  cardValue?: CardValue | null;  // only sent to the selecting player for UI feedback
 }
 
 export interface CardsRevealedPayload {

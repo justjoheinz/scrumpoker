@@ -22,7 +22,7 @@ interface UseSocketReturn {
   socket: Socket | null;
   connectionStatus: ConnectionStatus;
   joinRoom: (roomCode: string, playerName: string) => Promise<JoinRoomResponse>;
-  selectCard: (roomCode: string, card: CardValue) => void;
+  selectCard: (roomCode: string, card: CardValue | null) => void;
   revealCards: (roomCode: string) => void;
   resetGame: (roomCode: string) => void;
   removePlayer: (roomCode: string, playerId: string) => void;
@@ -105,14 +105,14 @@ export function useSocket(): UseSocketReturn {
     [socket]
   );
 
-  // Select a card
+  // Select a card (or unselect if card is null)
   const selectCard = useCallback(
-    (roomCode: string, card: CardValue) => {
+    (roomCode: string, card: CardValue | null) => {
       if (!socket) return;
 
       const payload: SelectCardPayload = {
         roomCode,
-        card,
+        card,  // Can now be null for unselection
       };
 
       socket.emit(ClientEvents.SELECT_CARD, payload);

@@ -67,16 +67,23 @@ export function useGameState(socket: Socket | null) {
       }));
     });
 
-    // Card selected (update player's hasCard status, but not value)
+    // Card selected
     socket.on(ServerEvents.CARD_SELECTED, (payload: CardSelectedPayload) => {
       console.log('Card selected by player:', payload.playerId);
       setGameState((prev) => ({
         ...prev,
-        players: prev.players.map((p) =>
-          p.id === payload.playerId
-            ? { ...p, card: payload.hasCard ? ('?' as any) : null } // Placeholder until reveal
-            : p
-        ),
+        players: prev.players.map((p) => {
+          if (p.id === payload.playerId) {
+            // If cardValue is present (sent to selecting player), use it for actual value
+            if (payload.cardValue !== undefined) {
+              return { ...p, card: payload.cardValue };
+            } else {
+              // For other players, show '?' placeholder or null
+              return { ...p, card: payload.hasCard ? ('?' as any) : null };
+            }
+          }
+          return p;
+        }),
       }));
     });
 

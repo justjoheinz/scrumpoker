@@ -126,12 +126,12 @@ export function getPlayer(roomCode: string, playerId: string): Player | undefine
 }
 
 /**
- * Update player's card selection
+ * Update player's card selection (or unselect if card is null)
  */
 export function updatePlayerCard(
   roomCode: string,
   playerId: string,
-  card: CardValue
+  card: CardValue | null  // Now accepts null for unselection
 ): boolean {
   const room = rooms.get(roomCode);
 
@@ -145,10 +145,14 @@ export function updatePlayerCard(
     return false;
   }
 
-  player.card = card;
+  player.card = card;  // Can be null (unselected) or CardValue
   room.lastActivity = Date.now();
 
-  console.log(`Player ${player.name} selected card: ${card}`);
+  if (card === null) {
+    console.log(`Player ${player.name} unselected their card`);
+  } else {
+    console.log(`Player ${player.name} selected card: ${card}`);
+  }
 
   return true;
 }

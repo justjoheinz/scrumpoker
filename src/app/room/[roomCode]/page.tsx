@@ -84,7 +84,7 @@ export default function RoomPage() {
     }
   };
 
-  const handleSelectCard = (card: CardValue) => {
+  const handleSelectCard = (card: CardValue | null) => {
     selectCard(roomCode, card);
   };
 

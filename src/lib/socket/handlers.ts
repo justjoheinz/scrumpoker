@@ -108,15 +108,24 @@ export function setupSocketHandlers(io: SocketIOServer): void {
     socket.on(ClientEvents.SELECT_CARD, (payload: SelectCardPayload) => {
       const { roomCode, card } = payload;
 
+      // Handle both select and unselect
       const success = updatePlayerCard(roomCode, socket.id, card);
 
       if (success) {
-        // Notify all players (card value hidden until reveal)
-        const cardPayload: CardSelectedPayload = {
+        // Notify the selecting player with actual card value (for UI feedback)
+        const selfPayload: CardSelectedPayload = {
           playerId: socket.id,
-          hasCard: true,
+          hasCard: card !== null,
+          cardValue: card,  // Send actual value to selecting player
         };
-        io.to(roomCode).emit(ServerEvents.CARD_SELECTED, cardPayload);
+        socket.emit(ServerEvents.CARD_SELECTED, selfPayload);
+
+        // Notify other players (card value hidden until reveal)
+        const othersPayload: CardSelectedPayload = {
+          playerId: socket.id,
+          hasCard: card !== null,
+        };
+        socket.to(roomCode).emit(ServerEvents.CARD_SELECTED, othersPayload);
       }
     });
 
