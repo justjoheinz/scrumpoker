@@ -84,45 +84,6 @@ nav .right li {
   gap: 1rem;
 }
 
-.connection-status {
-  position: fixed;
-  top: 70px;
-  right: 20px;
-  z-index: 1000;
-}
-
-.connection-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-}
-
-.connection-indicator.connected {
-  background-color: #4caf50;
-  color: white;
-}
-
-.connection-indicator.disconnected {
-  background-color: #f44336;
-  color: white;
-}
-
-.connection-indicator.reconnecting {
-  background-color: #ff9800;
-  color: white;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: currentColor;
-  animation: pulse 2s ease-in-out infinite;
-}
-
 @keyframes pulse {
   0%, 100% {
     opacity: 1;

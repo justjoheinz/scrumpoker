@@ -60,30 +60,6 @@ export default function RoomPage() {
     }
   };
 
-  const getConnectionStatusColor = () => {
-    switch (connectionStatus) {
-      case 'connected':
-        return 'connected';
-      case 'reconnecting':
-        return 'reconnecting';
-      default:
-        return 'disconnected';
-    }
-  };
-
-  const getConnectionStatusText = () => {
-    switch (connectionStatus) {
-      case 'connected':
-        return 'Connected';
-      case 'connecting':
-        return 'Connecting...';
-      case 'reconnecting':
-        return 'Reconnecting...';
-      default:
-        return 'Disconnected';
-    }
-  };
-
   const handleSelectCard = (card: CardValue | null) => {
     selectCard(roomCode, card);
   };
@@ -115,6 +91,7 @@ export default function RoomPage() {
           roomCode,
           playerName: currentPlayerName,
           playerCount: gameState.players.length,
+          connectionStatus,
         }}
       />
 
@@ -152,14 +129,6 @@ export default function RoomPage() {
         error={joinError}
         isJoining={isJoining}
       />
-
-      {/* Connection Status Indicator */}
-      <div className="connection-status">
-        <div className={`connection-indicator ${getConnectionStatusColor()}`}>
-          <span className="status-dot"></span>
-          {getConnectionStatusText()}
-        </div>
-      </div>
 
       <main>
         <div className="container">

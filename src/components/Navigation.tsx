@@ -12,6 +12,7 @@ interface NavigationProps {
     roomCode: string;
     playerName?: string;
     playerCount: number;
+    connectionStatus?: 'connected' | 'connecting' | 'disconnected' | 'reconnecting';
   };
 }
 
@@ -45,6 +46,30 @@ export default function Navigation({ roomInfo }: NavigationProps) {
                 <i className="material-icons" style={{ fontSize: '1.2rem' }}>group</i>
                 {roomInfo.playerCount}
               </span>
+
+              {roomInfo.connectionStatus && (
+                <span style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.9rem'
+                }}>
+                  <span style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor:
+                      roomInfo.connectionStatus === 'connected' ? '#4caf50' :
+                      roomInfo.connectionStatus === 'reconnecting' ? '#ff9800' :
+                      '#f44336',
+                    animation: roomInfo.connectionStatus === 'connecting' || roomInfo.connectionStatus === 'reconnecting' ? 'pulse 1.5s ease-in-out infinite' : 'none'
+                  }} />
+                  {roomInfo.connectionStatus === 'connected' ? 'Connected' :
+                   roomInfo.connectionStatus === 'connecting' ? 'Connecting...' :
+                   roomInfo.connectionStatus === 'reconnecting' ? 'Reconnecting...' :
+                   'Disconnected'}
+                </span>
+              )}
             </li>
           </ul>
         )}

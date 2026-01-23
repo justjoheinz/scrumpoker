@@ -25,8 +25,7 @@ export default function GameControls({
   return (
     <div className="card">
       <div className="card-content">
-        <span className="card-title">Game Controls</span>
-
+      
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
           {/* Reveal Button */}
           <button
@@ -63,12 +62,6 @@ export default function GameControls({
             </p>
           )}
 
-          {isRevealed && (
-            <p className="green-text">
-              <i className="material-icons tiny">check_circle</i> Cards revealed! Click reset to
-              start new round.
-            </p>
-          )}
         </div>
       </div>
     </div>
