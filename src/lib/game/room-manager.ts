@@ -6,9 +6,11 @@ import {
   Room,
   Player,
   CardValue,
+  CARD_VALUES,
   MAX_PLAYERS_PER_ROOM,
   ROOM_CLEANUP_TIMEOUT,
 } from '@/types/game';
+import { AdminStats, CardStats } from '@/types/admin';
 
 // Global in-memory storage
 const rooms = new Map<string, Room>();
@@ -259,4 +261,72 @@ export function startCleanupTask(): NodeJS.Timeout {
   }, 60000); // Check every minute
 
   return interval;
+}
+
+/**
+ * Get admin statistics for all rooms
+ */
+export function getAdminStats(): AdminStats {
+  let totalPlayers = 0;
+  let playersWithCards = 0;
+  let playersWithoutCards = 0;
+  let emptyRooms = 0;
+  let roomsWithPlayers = 0;
+  let revealedRooms = 0;
+  let hiddenRooms = 0;
+
+  // Initialize card distribution with zeros
+  const cardDistribution: CardStats['distribution'] = {} as CardStats['distribution'];
+  for (const card of CARD_VALUES) {
+    cardDistribution[card] = 0;
+  }
+
+  for (const room of rooms.values()) {
+    const playerCount = room.players.size;
+    totalPlayers += playerCount;
+
+    if (playerCount === 0) {
+      emptyRooms++;
+    } else {
+      roomsWithPlayers++;
+    }
+
+    if (room.isRevealed) {
+      revealedRooms++;
+    } else {
+      hiddenRooms++;
+    }
+
+    for (const player of room.players.values()) {
+      if (player.card !== null) {
+        playersWithCards++;
+        cardDistribution[player.card]++;
+      } else {
+        playersWithoutCards++;
+      }
+    }
+  }
+
+  const totalRooms = rooms.size;
+  const averagePerRoom = totalRooms > 0 ? totalPlayers / totalRooms : 0;
+
+  return {
+    timestamp: Date.now(),
+    rooms: {
+      total: totalRooms,
+      empty: emptyRooms,
+      withPlayers: roomsWithPlayers,
+      revealed: revealedRooms,
+      hidden: hiddenRooms,
+    },
+    players: {
+      total: totalPlayers,
+      averagePerRoom: Math.round(averagePerRoom * 100) / 100,
+      withCards: playersWithCards,
+      withoutCards: playersWithoutCards,
+    },
+    cards: {
+      distribution: cardDistribution,
+    },
+  };
 }

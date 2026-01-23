@@ -3,6 +3,7 @@ import { parse } from 'url';
 import next from 'next';
 import { Server as SocketIOServer } from 'socket.io';
 import { setupSocketHandlers } from './lib/socket/handlers';
+import { getAdminStats } from './lib/game/room-manager';
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -17,6 +18,15 @@ app.prepare().then(() => {
   const httpServer = createServer(async (req, res) => {
     try {
       const parsedUrl = parse(req.url!, true);
+
+      // Handle admin stats API directly to access server-side room state
+      if (parsedUrl.pathname === '/api/admin/stats' && req.method === 'GET') {
+        const stats = getAdminStats();
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(stats));
+        return;
+      }
+
       await handle(req, res, parsedUrl);
     } catch (err) {
       console.error('Error handling request:', err);

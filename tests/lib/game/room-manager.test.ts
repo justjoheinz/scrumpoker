@@ -12,8 +12,9 @@ import {
   setRoomRevealed,
   clearAllCards,
   getActiveRoomCount,
+  getAdminStats,
 } from '@/lib/game/room-manager'
-import { MAX_PLAYERS_PER_ROOM } from '@/types/game'
+import { MAX_PLAYERS_PER_ROOM, CARD_VALUES } from '@/types/game'
 
 // Generate unique room codes for each test to avoid state interference
 let testCounter = 0
@@ -360,6 +361,123 @@ describe('lib/game/room-manager', () => {
       createOrGetRoom(roomCode2)
 
       expect(getActiveRoomCount()).toBe(initialCount + 2)
+    })
+  })
+
+  describe('getAdminStats', () => {
+    it('returns stats with timestamp', () => {
+      const stats = getAdminStats()
+
+      expect(stats.timestamp).toBeLessThanOrEqual(Date.now())
+      expect(stats.timestamp).toBeGreaterThan(0)
+    })
+
+    it('includes all card values in distribution', () => {
+      const stats = getAdminStats()
+
+      for (const card of CARD_VALUES) {
+        expect(stats.cards.distribution).toHaveProperty(card)
+        expect(typeof stats.cards.distribution[card]).toBe('number')
+      }
+    })
+
+    it('counts empty rooms correctly', () => {
+      const initialStats = getAdminStats()
+      const initialEmpty = initialStats.rooms.empty
+
+      const roomCode = uniqueRoomCode()
+      createOrGetRoom(roomCode)
+
+      const stats = getAdminStats()
+
+      expect(stats.rooms.empty).toBe(initialEmpty + 1)
+    })
+
+    it('counts rooms with players correctly', () => {
+      const initialStats = getAdminStats()
+      const initialWithPlayers = initialStats.rooms.withPlayers
+
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+
+      const stats = getAdminStats()
+
+      expect(stats.rooms.withPlayers).toBe(initialWithPlayers + 1)
+    })
+
+    it('counts total players correctly', () => {
+      const initialStats = getAdminStats()
+      const initialPlayers = initialStats.players.total
+
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      addPlayer(roomCode, 'player-2', 'Bob')
+
+      const stats = getAdminStats()
+
+      expect(stats.players.total).toBe(initialPlayers + 2)
+    })
+
+    it('counts players with cards correctly', () => {
+      const initialStats = getAdminStats()
+      const initialWithCards = initialStats.players.withCards
+
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      addPlayer(roomCode, 'player-2', 'Bob')
+      updatePlayerCard(roomCode, 'player-1', '5')
+
+      const stats = getAdminStats()
+
+      expect(stats.players.withCards).toBe(initialWithCards + 1)
+      expect(stats.players.withoutCards).toBeGreaterThanOrEqual(1) // Bob has no card
+    })
+
+    it('tracks card distribution correctly', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      addPlayer(roomCode, 'player-2', 'Bob')
+      addPlayer(roomCode, 'player-3', 'Charlie')
+      updatePlayerCard(roomCode, 'player-1', '5')
+      updatePlayerCard(roomCode, 'player-2', '5')
+      updatePlayerCard(roomCode, 'player-3', '8')
+
+      const stats = getAdminStats()
+
+      // At minimum, we should see the cards we just added
+      expect(stats.cards.distribution['5']).toBeGreaterThanOrEqual(2)
+      expect(stats.cards.distribution['8']).toBeGreaterThanOrEqual(1)
+    })
+
+    it('counts revealed and hidden rooms correctly', () => {
+      const initialStats = getAdminStats()
+      const initialRevealed = initialStats.rooms.revealed
+      const initialHidden = initialStats.rooms.hidden
+
+      const roomCode1 = uniqueRoomCode()
+      const roomCode2 = uniqueRoomCode()
+      createOrGetRoom(roomCode1)
+      createOrGetRoom(roomCode2)
+      setRoomRevealed(roomCode1, true)
+
+      const stats = getAdminStats()
+
+      expect(stats.rooms.revealed).toBe(initialRevealed + 1)
+      expect(stats.rooms.hidden).toBe(initialHidden + 1)
+    })
+
+    it('calculates average players per room', () => {
+      const roomCode1 = uniqueRoomCode()
+      const roomCode2 = uniqueRoomCode()
+      addPlayer(roomCode1, 'player-1', 'Alice')
+      addPlayer(roomCode1, 'player-2', 'Bob')
+      addPlayer(roomCode2, 'player-3', 'Charlie')
+
+      const stats = getAdminStats()
+
+      // Average should be a number between 0 and MAX_PLAYERS_PER_ROOM
+      expect(stats.players.averagePerRoom).toBeGreaterThanOrEqual(0)
+      expect(stats.players.averagePerRoom).toBeLessThanOrEqual(MAX_PLAYERS_PER_ROOM)
     })
   })
 })
