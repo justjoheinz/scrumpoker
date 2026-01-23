@@ -19,7 +19,6 @@ import {
   CardSelectedPayload,
   CardsRevealedPayload,
   GameResetPayload,
-  ErrorPayload,
   RemovedFromRoomPayload,
 } from '@/types/socket-events';
 import {
@@ -32,7 +31,6 @@ import {
 import {
   revealCards,
   resetGame,
-  getSortedPlayers,
 } from '../game/game-logic';
 import { RECONNECTION_GRACE_PERIOD } from '@/types/game';
 import { startCleanupTask } from '../game/room-manager';

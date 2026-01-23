@@ -6,7 +6,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import {
   ClientEvents,
-  ServerEvents,
   JoinRoomPayload,
   JoinRoomResponse,
   SelectCardPayload,

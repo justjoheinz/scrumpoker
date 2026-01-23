@@ -17,8 +17,13 @@ import {
 } from '@/types/socket-events';
 import { Player } from '@/types/game';
 
+// Client-side player type with explicit hasCard tracking
+export interface ClientPlayer extends Player {
+  hasCard: boolean;
+}
+
 interface GameState {
-  players: Player[];
+  players: ClientPlayer[];
   isRevealed: boolean;
   currentPlayerId: string | null;
   error: string | null;
@@ -41,7 +46,7 @@ export function useGameState(socket: Socket | null) {
     socket.on(ServerEvents.ROOM_STATE, (payload: RoomStatePayload) => {
       console.log('Room state received:', payload);
       setGameState({
-        players: payload.players,
+        players: payload.players.map((p) => ({ ...p, hasCard: p.card !== null })),
         isRevealed: payload.isRevealed,
         currentPlayerId: payload.currentPlayerId,
         error: null,
@@ -54,7 +59,7 @@ export function useGameState(socket: Socket | null) {
       console.log('Player joined:', payload.player.name);
       setGameState((prev) => ({
         ...prev,
-        players: [...prev.players, payload.player],
+        players: [...prev.players, { ...payload.player, hasCard: payload.player.card !== null }],
       }));
     });
 
@@ -74,12 +79,12 @@ export function useGameState(socket: Socket | null) {
         ...prev,
         players: prev.players.map((p) => {
           if (p.id === payload.playerId) {
-            // If cardValue is present (sent to selecting player), use it for actual value
+            // If cardValue is present (sent to selecting player), use actual value
             if (payload.cardValue !== undefined) {
-              return { ...p, card: payload.cardValue };
+              return { ...p, card: payload.cardValue, hasCard: payload.hasCard };
             } else {
-              // For other players, show '?' placeholder or null
-              return { ...p, card: payload.hasCard ? ('?' as any) : null };
+              // For other players, only update hasCard (card value remains unknown)
+              return { ...p, hasCard: payload.hasCard };
             }
           }
           return p;
@@ -92,7 +97,7 @@ export function useGameState(socket: Socket | null) {
       console.log('Cards revealed');
       setGameState((prev) => ({
         ...prev,
-        players: payload.players,
+        players: payload.players.map((p) => ({ ...p, hasCard: p.card !== null })),
         isRevealed: true,
       }));
     });
@@ -102,7 +107,7 @@ export function useGameState(socket: Socket | null) {
       console.log('Game reset');
       setGameState((prev) => ({
         ...prev,
-        players: payload.players,
+        players: payload.players.map((p) => ({ ...p, hasCard: p.card !== null })),
         isRevealed: false,
       }));
     });

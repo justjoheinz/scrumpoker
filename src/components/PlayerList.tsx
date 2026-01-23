@@ -4,10 +4,10 @@
 
 'use client';
 
-import { Player } from '@/types/game';
+import { ClientPlayer } from '@/hooks/useGameState';
 
 interface PlayerListProps {
-  players: Player[];
+  players: ClientPlayer[];
   currentPlayerId: string | null;
   isRevealed: boolean;
   onRemovePlayer: (playerId: string) => void;
@@ -19,8 +19,8 @@ export default function PlayerList({
   isRevealed,
   onRemovePlayer,
 }: PlayerListProps) {
-  const renderCardStatus = (player: Player) => {
-    if (!player.card) {
+  const renderCardStatus = (player: ClientPlayer) => {
+    if (!player.hasCard) {
       // No card selected
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -29,7 +29,7 @@ export default function PlayerList({
       );
     }
 
-    if (isRevealed) {
+    if (isRevealed && player.card) {
       // Show actual card value
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

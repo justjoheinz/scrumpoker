@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useGameState } from '@/hooks/useGameState';
 import JoinRoomModal from '@/components/JoinRoomModal';
@@ -26,23 +26,12 @@ export default function RoomPage() {
 
   // Get current player's selected card
   const currentPlayer = gameState.players.find((p) => p.id === gameState.currentPlayerId);
-  const selectedCard = currentPlayer?.card || null;
+  const selectedCard = currentPlayer?.card ?? null;
 
   // Calculate players with cards
-  const playersWithCards = gameState.players.filter((p) => p.card !== null).length;
+  const playersWithCards = gameState.players.filter((p) => p.hasCard).length;
 
-  // Check if already joined (from localStorage)
-  useEffect(() => {
-    const storedPlayerId = localStorage.getItem(`player_${roomCode}_id`);
-    const storedPlayerName = localStorage.getItem(`player_${roomCode}_name`);
-
-    // If we have stored data and socket is connected, try to rejoin
-    if (storedPlayerId && storedPlayerName && socket && connectionStatus === 'connected' && !hasJoined) {
-      handleJoinRoom(storedPlayerName);
-    }
-  }, [socket, connectionStatus, roomCode]);
-
-  const handleJoinRoom = async (playerName: string) => {
+  const handleJoinRoom = useCallback(async (playerName: string) => {
     setIsJoining(true);
     setJoinError('');
 
@@ -58,7 +47,18 @@ export default function RoomPage() {
       localStorage.removeItem(`player_${roomCode}_id`);
       localStorage.removeItem(`player_${roomCode}_name`);
     }
-  };
+  }, [joinRoom, roomCode]);
+
+  // Check if already joined (from localStorage)
+  useEffect(() => {
+    const storedPlayerId = localStorage.getItem(`player_${roomCode}_id`);
+    const storedPlayerName = localStorage.getItem(`player_${roomCode}_name`);
+
+    // If we have stored data and socket is connected, try to rejoin
+    if (storedPlayerId && storedPlayerName && socket && connectionStatus === 'connected' && !hasJoined) {
+      handleJoinRoom(storedPlayerName);
+    }
+  }, [socket, connectionStatus, roomCode, hasJoined, handleJoinRoom]);
 
   const handleSelectCard = (card: CardValue | null) => {
     selectCard(roomCode, card);

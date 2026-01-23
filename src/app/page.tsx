@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
+
+const generateRoomCode = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 6);
 import Navigation from '@/components/Navigation';
 
 export default function Home() {
@@ -13,8 +15,7 @@ export default function Home() {
 
   const handleCreateRoom = () => {
     setIsCreating(true);
-    // Generate 6-character alphanumeric room code
-    const code = nanoid(6).toUpperCase();
+    const code = generateRoomCode();
     router.push(`/room/${code}`);
   };
 
