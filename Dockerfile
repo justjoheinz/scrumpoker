@@ -1,0 +1,43 @@
+# ========== Build Stage ==========
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install ALL dependencies (including devDependencies for build)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build Next.js application
+RUN npm run build
+
+# ========== Production Stage ==========
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Set environment
+ENV NODE_ENV=production
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --production
+
+# Copy built application from builder
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.js ./next.config.js
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+
+# Expose port
+EXPOSE 3000
+
+# Start server
+CMD ["npm", "start"]

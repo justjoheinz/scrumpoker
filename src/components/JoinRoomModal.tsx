@@ -1,0 +1,124 @@
+/**
+ * JoinRoomModal - Modal for entering player name to join room
+ */
+
+'use client';
+
+import { useState, useEffect } from 'react';
+
+interface JoinRoomModalProps {
+  roomCode: string;
+  onJoin: (playerName: string) => void;
+  isOpen: boolean;
+  error?: string;
+  isJoining?: boolean;
+}
+
+export default function JoinRoomModal({
+  roomCode,
+  onJoin,
+  isOpen,
+  error,
+  isJoining = false,
+}: JoinRoomModalProps) {
+  const [playerName, setPlayerName] = useState('');
+  const [localError, setLocalError] = useState('');
+
+  // Try to get stored name from localStorage
+  useEffect(() => {
+    const storedName = localStorage.getItem(`player_${roomCode}_name`);
+    if (storedName) {
+      setPlayerName(storedName);
+    }
+  }, [roomCode]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLocalError('');
+
+    // Validate name
+    if (!playerName.trim()) {
+      setLocalError('Please enter your name');
+      return;
+    }
+
+    if (playerName.trim().length > 50) {
+      setLocalError('Name must be 50 characters or less');
+      return;
+    }
+
+    onJoin(playerName.trim());
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="modal"
+      style={{
+        display: 'block',
+        position: 'fixed',
+        zIndex: 1000,
+        left: 0,
+        top: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      }}
+    >
+      <div
+        className="modal-content"
+        style={{
+          backgroundColor: '#fefefe',
+          margin: '10% auto',
+          padding: '20px',
+          border: '1px solid #888',
+          width: '90%',
+          maxWidth: '500px',
+          borderRadius: '4px',
+        }}
+      >
+        <div className="card">
+          <div className="card-content">
+            <span className="card-title">Join Room: {roomCode}</span>
+            <p>Enter your name to join the estimation session</p>
+
+            <form onSubmit={handleSubmit}>
+              <div className="input-field">
+                <input
+                  id="player-name"
+                  type="text"
+                  value={playerName}
+                  onChange={(e) => {
+                    setPlayerName(e.target.value);
+                    setLocalError('');
+                  }}
+                  placeholder="Your name"
+                  maxLength={50}
+                  autoFocus
+                  disabled={isJoining}
+                />
+                <label htmlFor="player-name" className="active">
+                  Your Name
+                </label>
+                {(localError || error) && (
+                  <span className="helper-text red-text">{localError || error}</span>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="btn waves-effect waves-light teal"
+                disabled={isJoining || !playerName.trim()}
+                style={{ marginTop: '20px', width: '100%' }}
+              >
+                {isJoining ? 'Joining...' : 'Join Room'}
+                <i className="material-icons right">arrow_forward</i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,116 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+main {
+  padding: 2rem 0;
+  min-height: calc(100vh - 64px);
+}
+
+/* Custom styles for Scrum Poker */
+
+.card-face-down {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  border-radius: 4px;
+}
+
+.poker-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.poker-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.poker-card.selected {
+  border: 3px solid #26a69a;
+  transform: translateY(-5px);
+}
+
+.poker-card .card-content {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.player-item.current-player {
+  background-color: #e8f5e9;
+}
+
+.player-card-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.connection-status {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.connection-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.connection-indicator.connected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.connection-indicator.disconnected {
+  background-color: #f44336;
+  color: white;
+}
+
+.connection-indicator.reconnecting {
+  background-color: #ff9800;
+  color: white;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

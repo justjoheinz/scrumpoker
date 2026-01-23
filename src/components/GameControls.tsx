@@ -1,0 +1,77 @@
+/**
+ * GameControls - Reveal and Reset buttons
+ */
+
+'use client';
+
+interface GameControlsProps {
+  isRevealed: boolean;
+  playersWithCards: number;
+  totalPlayers: number;
+  onReveal: () => void;
+  onReset: () => void;
+}
+
+export default function GameControls({
+  isRevealed,
+  playersWithCards,
+  totalPlayers,
+  onReveal,
+  onReset,
+}: GameControlsProps) {
+  const canReveal = !isRevealed && playersWithCards >= 2 && totalPlayers >= 2;
+  const canReset = isRevealed;
+
+  return (
+    <div className="card">
+      <div className="card-content">
+        <span className="card-title">Game Controls</span>
+
+        <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
+          {/* Reveal Button */}
+          <button
+            className="btn waves-effect waves-light blue"
+            onClick={onReveal}
+            disabled={!canReveal}
+            style={{ flex: '1', minWidth: '200px' }}
+          >
+            <i className="material-icons left">visibility</i>
+            Reveal Cards
+          </button>
+
+          {/* Reset Button */}
+          <button
+            className="btn waves-effect waves-light orange"
+            onClick={onReset}
+            disabled={!canReset}
+            style={{ flex: '1', minWidth: '200px' }}
+          >
+            <i className="material-icons left">refresh</i>
+            Reset Game
+          </button>
+        </div>
+
+        {/* Helper text */}
+        <div style={{ marginTop: '15px' }}>
+          {!isRevealed && (
+            <p className="grey-text">
+              <i className="material-icons tiny">info</i>{' '}
+              {playersWithCards}/{totalPlayers} players have selected cards
+              {!canReveal && totalPlayers >= 2 && (
+                <span> - Need at least 2 players with cards to reveal</span>
+              )}
+              {totalPlayers < 2 && <span> - Need at least 2 players in room</span>}
+            </p>
+          )}
+
+          {isRevealed && (
+            <p className="green-text">
+              <i className="material-icons tiny">check_circle</i> Cards revealed! Click reset to
+              start new round.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
