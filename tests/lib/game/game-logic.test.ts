@@ -337,4 +337,158 @@ describe('lib/game/game-logic', () => {
       expect(stats?.canReset).toBe(true)
     })
   })
+
+  describe('revealCards - edge cases', () => {
+    it('works with exactly 1 player', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      updatePlayerCard(roomCode, 'player-1', '5')
+
+      const result = revealCards(roomCode)
+
+      expect(result.success).toBe(true)
+      expect(result.players).toHaveLength(1)
+      expect(getRoom(roomCode)?.isRevealed).toBe(true)
+    })
+
+    it('works when all players have null cards', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      addPlayer(roomCode, 'player-2', 'Bob')
+      // No cards selected
+
+      const result = revealCards(roomCode)
+
+      expect(result.success).toBe(true)
+      expect(result.players?.every(p => p.card === null)).toBe(true)
+    })
+
+    it('works with empty room', () => {
+      const roomCode = uniqueRoomCode()
+      createOrGetRoom(roomCode)
+
+      const result = revealCards(roomCode)
+
+      expect(result.success).toBe(true)
+      expect(result.players).toHaveLength(0)
+    })
+  })
+
+  describe('resetGame - edge cases', () => {
+    it('works with exactly 1 player', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      updatePlayerCard(roomCode, 'player-1', '5')
+      setRoomRevealed(roomCode, true)
+
+      const result = resetGame(roomCode)
+
+      expect(result.success).toBe(true)
+      expect(result.players).toHaveLength(1)
+      expect(result.players?.[0].card).toBeNull()
+    })
+
+    it('works when all players already have null cards', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      addPlayer(roomCode, 'player-2', 'Bob')
+      setRoomRevealed(roomCode, true)
+      // No cards were ever selected
+
+      const result = resetGame(roomCode)
+
+      expect(result.success).toBe(true)
+      expect(result.players?.every(p => p.card === null)).toBe(true)
+    })
+
+    it('works with empty room', () => {
+      const roomCode = uniqueRoomCode()
+      createOrGetRoom(roomCode)
+      setRoomRevealed(roomCode, true)
+
+      const result = resetGame(roomCode)
+
+      expect(result.success).toBe(true)
+      expect(result.players).toHaveLength(0)
+    })
+  })
+
+  describe('getSortedPlayers - sorting edge cases', () => {
+    it('sorts names case-sensitively (uppercase before lowercase in localeCompare)', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'alice')
+      addPlayer(roomCode, 'player-2', 'Bob')
+      addPlayer(roomCode, 'player-3', 'Alice')
+
+      const players = getSortedPlayers(roomCode)
+      const names = players.map(p => p.name)
+
+      // localeCompare typically sorts: Alice, Bob, alice (capital letters first)
+      // Verify the sort is consistent
+      expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)))
+    })
+
+    it('handles unicode names in sorting', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Zürich')
+      addPlayer(roomCode, 'player-2', 'Amsterdam')
+      addPlayer(roomCode, 'player-3', 'Örebro')
+
+      const players = getSortedPlayers(roomCode)
+
+      // Verify sorting is applied consistently
+      const names = players.map(p => p.name)
+      expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)))
+    })
+
+    it('handles emoji names in sorting', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', '🍎 Apple')
+      addPlayer(roomCode, 'player-2', '🍊 Orange')
+      addPlayer(roomCode, 'player-3', 'Banana')
+
+      const players = getSortedPlayers(roomCode)
+
+      // Just verify no crash and consistent ordering
+      expect(players).toHaveLength(3)
+      const names = players.map(p => p.name)
+      expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)))
+    })
+
+    it('handles mixed card values including X when revealed', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      addPlayer(roomCode, 'player-2', 'Bob')
+      addPlayer(roomCode, 'player-3', 'Charlie')
+      addPlayer(roomCode, 'player-4', 'Diana')
+      updatePlayerCard(roomCode, 'player-1', '3')
+      updatePlayerCard(roomCode, 'player-2', 'X')
+      // Charlie has no card
+      updatePlayerCard(roomCode, 'player-4', '1')
+      setRoomRevealed(roomCode, true)
+
+      const players = getSortedPlayers(roomCode)
+
+      // Order should be: Diana (1), Alice (3), Bob (X), Charlie (no card)
+      expect(players.map(p => p.name)).toEqual(['Diana', 'Alice', 'Bob', 'Charlie'])
+    })
+
+    it('maintains stable sort for identical conditions', () => {
+      const roomCode = uniqueRoomCode()
+      // Add players with same card and similar names
+      addPlayer(roomCode, 'player-1', 'Test1')
+      addPlayer(roomCode, 'player-2', 'Test2')
+      addPlayer(roomCode, 'player-3', 'Test3')
+      updatePlayerCard(roomCode, 'player-1', '5')
+      updatePlayerCard(roomCode, 'player-2', '5')
+      updatePlayerCard(roomCode, 'player-3', '5')
+      setRoomRevealed(roomCode, true)
+
+      const players1 = getSortedPlayers(roomCode)
+      const players2 = getSortedPlayers(roomCode)
+
+      // Multiple calls should return same order
+      expect(players1.map(p => p.name)).toEqual(players2.map(p => p.name))
+    })
+  })
 })

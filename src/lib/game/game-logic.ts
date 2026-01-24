@@ -9,6 +9,9 @@ import {
   clearAllCards,
   getRoomPlayers,
 } from './room-manager';
+import { createLogger } from '../logger';
+
+const log = createLogger('game-logic');
 
 /**
  * Reveal all cards in a room
@@ -26,7 +29,7 @@ export function revealCards(roomCode: string): { success: boolean; players?: Pla
   // Get sorted players
   const players = getSortedPlayers(roomCode);
 
-  console.log(`Cards revealed in room ${roomCode}`);
+  log.debug(`Cards revealed in room ${roomCode}`);
 
   return { success: true, players };
 }
@@ -47,7 +50,7 @@ export function resetGame(roomCode: string): { success: boolean; players?: Playe
   // Get sorted players (alphabetically after reset)
   const players = getSortedPlayers(roomCode);
 
-  console.log(`Game reset in room ${roomCode}`);
+  log.debug(`Game reset in room ${roomCode}`);
 
   return { success: true, players };
 }

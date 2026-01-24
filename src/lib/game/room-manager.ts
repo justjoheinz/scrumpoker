@@ -11,6 +11,9 @@ import {
   ROOM_CLEANUP_TIMEOUT,
 } from '@/types/game';
 import { AdminStats, CardStats } from '@/types/admin';
+import { createLogger } from '../logger';
+
+const log = createLogger('room-manager');
 
 // Global in-memory storage
 const rooms = new Map<string, Room>();
@@ -30,7 +33,7 @@ export function createOrGetRoom(roomCode: string): Room {
       lastActivity: Date.now(),
     };
     rooms.set(roomCode, room);
-    console.log(`Created new room: ${roomCode}`);
+    log.info(`Created new room: ${roomCode}`);
   }
 
   return room;
@@ -91,7 +94,7 @@ export function addPlayer(
   room.players.set(playerId, player);
   room.lastActivity = Date.now();
 
-  console.log(`Player ${playerName} (${playerId}) joined room ${roomCode}`);
+  log.info(`Player ${playerName} (${playerId}) joined room ${roomCode}`);
 
   return { success: true };
 }
@@ -114,7 +117,7 @@ export function removePlayer(roomCode: string, playerId: string): boolean {
   room.players.delete(playerId);
   room.lastActivity = Date.now();
 
-  console.log(`Player ${player.name} (${playerId}) left room ${roomCode}`);
+  log.info(`Player ${player.name} (${playerId}) left room ${roomCode}`);
 
   return true;
 }
@@ -151,9 +154,9 @@ export function updatePlayerCard(
   room.lastActivity = Date.now();
 
   if (card === null) {
-    console.log(`Player ${player.name} unselected their card`);
+    log.debug(`Player ${player.name} unselected their card`);
   } else {
-    console.log(`Player ${player.name} selected card: ${card}`);
+    log.debug(`Player ${player.name} selected card: ${card}`);
   }
 
   return true;
@@ -235,7 +238,7 @@ export function cleanupRooms(): number {
     ) {
       rooms.delete(code);
       cleaned++;
-      console.log(`Cleaned up stale room: ${code}`);
+      log.debug(`Cleaned up stale room: ${code}`);
     }
   }
 
@@ -256,7 +259,7 @@ export function startCleanupTask(): NodeJS.Timeout {
   const interval = setInterval(() => {
     const cleaned = cleanupRooms();
     if (cleaned > 0) {
-      console.log(`Cleanup: Removed ${cleaned} stale room(s)`);
+      log.info(`Cleanup: Removed ${cleaned} stale room(s)`);
     }
   }, 60000); // Check every minute
 

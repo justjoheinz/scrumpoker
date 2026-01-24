@@ -14,6 +14,9 @@ import {
   RemovePlayerPayload,
 } from '@/types/socket-events';
 import { CardValue } from '@/types/game';
+import { createClientLogger } from '@/lib/logger';
+
+const log = createClientLogger('useSocket');
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 
@@ -41,27 +44,27 @@ export function useSocket(): UseSocketReturn {
 
     // Connection event handlers
     socketInstance.on('connect', () => {
-      console.log('Socket connected:', socketInstance.id);
+      log.debug('Socket connected:', socketInstance.id);
       setConnectionStatus('connected');
     });
 
     socketInstance.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
+      log.debug('Socket disconnected:', reason);
       setConnectionStatus('disconnected');
     });
 
     socketInstance.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
+      log.error('Socket connection error:', error);
       setConnectionStatus('disconnected');
     });
 
     socketInstance.io.on('reconnect_attempt', () => {
-      console.log('Socket reconnecting...');
+      log.debug('Socket reconnecting...');
       setConnectionStatus('reconnecting');
     });
 
     socketInstance.io.on('reconnect', () => {
-      console.log('Socket reconnected');
+      log.debug('Socket reconnected');
       setConnectionStatus('connected');
     });
 

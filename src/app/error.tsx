@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
+import { createClientLogger } from '@/lib/logger';
+
+const log = createClientLogger('error-page');
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -9,7 +12,7 @@ interface ErrorProps {
 
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
-    console.error('Application error:', error);
+    log.error('Application error:', error);
   }, [error]);
 
   return (

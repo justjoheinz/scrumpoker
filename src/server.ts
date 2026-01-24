@@ -4,6 +4,9 @@ import next from 'next';
 import { Server as SocketIOServer } from 'socket.io';
 import { setupSocketHandlers } from './lib/socket/handlers';
 import { getAdminStats } from './lib/game/room-manager';
+import { createLogger } from './lib/logger';
+
+const log = createLogger('server');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -29,7 +32,7 @@ app.prepare().then(() => {
 
       await handle(req, res, parsedUrl);
     } catch (err) {
-      console.error('Error handling request:', err);
+      log.error('Error handling request:', err);
       res.statusCode = 500;
       res.end('Internal server error');
     }
@@ -48,16 +51,16 @@ app.prepare().then(() => {
 
   // Start server
   httpServer.listen(port, () => {
-    console.log(`> Ready on http://${hostname}:${port}`);
-    console.log(`> Environment: ${dev ? 'development' : 'production'}`);
-    console.log(`> Socket.io server running`);
+    log.info(`Ready on http://${hostname}:${port}`);
+    log.info(`Environment: ${dev ? 'development' : 'production'}`);
+    log.info('Socket.io server running');
   });
 
   // Graceful shutdown
   process.on('SIGTERM', () => {
-    console.log('SIGTERM signal received: closing HTTP server');
+    log.info('SIGTERM signal received: closing HTTP server');
     httpServer.close(() => {
-      console.log('HTTP server closed');
+      log.info('HTTP server closed');
     });
   });
 });

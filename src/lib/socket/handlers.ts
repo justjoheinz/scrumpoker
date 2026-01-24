@@ -34,6 +34,9 @@ import {
 } from '../game/game-logic';
 import { RECONNECTION_GRACE_PERIOD } from '@/types/game';
 import { startCleanupTask } from '../game/room-manager';
+import { createLogger } from '../logger';
+
+const log = createLogger('socket');
 
 // Track disconnected players with timeouts for reconnection grace period
 const disconnectedPlayers = new Map<
@@ -42,13 +45,13 @@ const disconnectedPlayers = new Map<
 >();
 
 export function setupSocketHandlers(io: SocketIOServer): void {
-  console.log('Setting up Socket.io handlers...');
+  log.info('Setting up Socket.io handlers');
 
   // Start periodic room cleanup
   startCleanupTask();
 
   io.on('connection', (socket: Socket) => {
-    console.log(`Client connected: ${socket.id}`);
+    log.debug(`Client connected: ${socket.id}`);
 
     let currentRoomCode: string | null = null;
 
@@ -63,7 +66,7 @@ export function setupSocketHandlers(io: SocketIOServer): void {
           const { timeout } = disconnectedPlayers.get(reconnectPlayerId)!;
           clearTimeout(timeout);
           disconnectedPlayers.delete(reconnectPlayerId);
-          console.log(`Player ${reconnectPlayerId} reconnected`);
+          log.debug(`Player ${reconnectPlayerId} reconnected`);
         }
 
         // Add player to room
@@ -196,7 +199,7 @@ export function setupSocketHandlers(io: SocketIOServer): void {
 
     // ========== DISCONNECT ==========
     socket.on('disconnect', () => {
-      console.log(`Client disconnected: ${socket.id}`);
+      log.debug(`Client disconnected: ${socket.id}`);
 
       if (currentRoomCode) {
         // Capture room code in closure for setTimeout
@@ -224,7 +227,7 @@ export function setupSocketHandlers(io: SocketIOServer): void {
             timeout,
           });
 
-          console.log(
+          log.debug(
             `Player ${player.name} disconnected. Grace period: ${RECONNECTION_GRACE_PERIOD}ms`
           );
         }

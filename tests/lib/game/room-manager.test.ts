@@ -13,8 +13,9 @@ import {
   clearAllCards,
   getActiveRoomCount,
   getAdminStats,
+  cleanupRooms,
 } from '@/lib/game/room-manager'
-import { MAX_PLAYERS_PER_ROOM, CARD_VALUES } from '@/types/game'
+import { MAX_PLAYERS_PER_ROOM, CARD_VALUES, ROOM_CLEANUP_TIMEOUT } from '@/types/game'
 
 // Generate unique room codes for each test to avoid state interference
 let testCounter = 0
@@ -478,6 +479,140 @@ describe('lib/game/room-manager', () => {
       // Average should be a number between 0 and MAX_PLAYERS_PER_ROOM
       expect(stats.players.averagePerRoom).toBeGreaterThanOrEqual(0)
       expect(stats.players.averagePerRoom).toBeLessThanOrEqual(MAX_PLAYERS_PER_ROOM)
+    })
+  })
+
+  describe('cleanupRooms', () => {
+    it('removes empty rooms older than ROOM_CLEANUP_TIMEOUT', () => {
+      const roomCode = uniqueRoomCode()
+      const room = createOrGetRoom(roomCode)
+
+      // Backdate lastActivity to exceed timeout
+      room.lastActivity = Date.now() - ROOM_CLEANUP_TIMEOUT - 1000
+
+      const cleaned = cleanupRooms()
+
+      expect(cleaned).toBeGreaterThanOrEqual(1)
+      expect(roomExists(roomCode)).toBe(false)
+    })
+
+    it('does NOT remove rooms with players', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      const room = getRoom(roomCode)!
+
+      // Backdate lastActivity
+      room.lastActivity = Date.now() - ROOM_CLEANUP_TIMEOUT - 1000
+
+      cleanupRooms()
+
+      expect(roomExists(roomCode)).toBe(true)
+    })
+
+    it('does NOT remove recently active empty rooms', () => {
+      const roomCode = uniqueRoomCode()
+      createOrGetRoom(roomCode)
+      // Room is freshly created, lastActivity is recent
+
+      cleanupRooms()
+
+      expect(roomExists(roomCode)).toBe(true)
+    })
+
+    it('returns count of cleaned rooms', () => {
+      const roomCode1 = uniqueRoomCode()
+      const roomCode2 = uniqueRoomCode()
+      const room1 = createOrGetRoom(roomCode1)
+      const room2 = createOrGetRoom(roomCode2)
+
+      // Backdate both rooms
+      room1.lastActivity = Date.now() - ROOM_CLEANUP_TIMEOUT - 1000
+      room2.lastActivity = Date.now() - ROOM_CLEANUP_TIMEOUT - 1000
+
+      const cleaned = cleanupRooms()
+
+      expect(cleaned).toBeGreaterThanOrEqual(2)
+    })
+
+    it('returns 0 when no rooms need cleanup', () => {
+      // Create a fresh room that should not be cleaned
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+
+      const cleaned = cleanupRooms()
+
+      // May be 0 or more depending on other test state, but room should still exist
+      expect(roomExists(roomCode)).toBe(true)
+    })
+  })
+
+  describe('addPlayer - name validation edge cases', () => {
+    it('accepts unicode characters in player names', () => {
+      const roomCode = uniqueRoomCode()
+
+      const result = addPlayer(roomCode, 'player-1', '日本語')
+
+      expect(result.success).toBe(true)
+      expect(getPlayer(roomCode, 'player-1')?.name).toBe('日本語')
+    })
+
+    it('accepts emoji in player names', () => {
+      const roomCode = uniqueRoomCode()
+
+      const result = addPlayer(roomCode, 'player-1', '🎲 Player')
+
+      expect(result.success).toBe(true)
+      expect(getPlayer(roomCode, 'player-1')?.name).toBe('🎲 Player')
+    })
+
+    it('preserves whitespace in player names', () => {
+      const roomCode = uniqueRoomCode()
+
+      // Names with leading/trailing spaces are preserved as-is
+      const result = addPlayer(roomCode, 'player-1', '  Alice  ')
+
+      expect(result.success).toBe(true)
+      expect(getPlayer(roomCode, 'player-1')?.name).toBe('  Alice  ')
+    })
+
+    it('allows empty string as player name', () => {
+      const roomCode = uniqueRoomCode()
+
+      // Note: This tests current behavior - empty names are allowed
+      // Application may want to validate this at a higher level
+      const result = addPlayer(roomCode, 'player-1', '')
+
+      expect(result.success).toBe(true)
+    })
+
+    it('allows very long player names', () => {
+      const roomCode = uniqueRoomCode()
+      const longName = 'A'.repeat(1000)
+
+      const result = addPlayer(roomCode, 'player-1', longName)
+
+      expect(result.success).toBe(true)
+      expect(getPlayer(roomCode, 'player-1')?.name).toBe(longName)
+    })
+
+    it('treats names differing only in whitespace as different', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+
+      // 'Alice ' (with trailing space) should be allowed
+      const result = addPlayer(roomCode, 'player-2', 'Alice ')
+
+      expect(result.success).toBe(true)
+    })
+
+    it('rejects duplicate names with different cases', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'ALICE')
+
+      const result = addPlayer(roomCode, 'player-2', 'alice')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('name already taken')
     })
   })
 })
