@@ -9,6 +9,11 @@ import { Logger, ILogObj } from 'tslog';
 
 // Parse LOG_LEVEL environment variable
 function getMinLevel(): number {
+  // Disable logging during tests
+  if (process.env.NODE_ENV === 'test') {
+    return 7; // Higher than fatal (6), disables all logging
+  }
+
   const level = process.env.LOG_LEVEL?.toLowerCase();
 
   switch (level) {
@@ -42,7 +47,7 @@ export const logger = new Logger<ILogObj>({
  */
 export const clientLogger = new Logger<ILogObj>({
   name: 'scrumpoker-client',
-  minLevel: process.env.NODE_ENV === 'production' ? 3 : 2,
+  minLevel: getMinLevel(),
   type: 'pretty',
   prettyLogTemplate: '{{logLevelName}}\t[{{name}}]\t',
   stylePrettyLogs: true,
