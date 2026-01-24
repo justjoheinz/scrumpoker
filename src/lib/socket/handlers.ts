@@ -113,20 +113,12 @@ export function setupSocketHandlers(io: SocketIOServer): void {
       const success = updatePlayerCard(roomCode, socket.id, card);
 
       if (success) {
-        // Notify the selecting player with actual card value (for UI feedback)
-        const selfPayload: CardSelectedPayload = {
+        // Notify all players (UI uses isRevealed to hide card values)
+        const cardSelectedPayload: CardSelectedPayload = {
           playerId: socket.id,
-          hasCard: card !== null,
-          cardValue: card,  // Send actual value to selecting player
+          card,
         };
-        socket.emit(ServerEvents.CARD_SELECTED, selfPayload);
-
-        // Notify other players (card value hidden until reveal)
-        const othersPayload: CardSelectedPayload = {
-          playerId: socket.id,
-          hasCard: card !== null,
-        };
-        socket.to(roomCode).emit(ServerEvents.CARD_SELECTED, othersPayload);
+        io.to(roomCode).emit(ServerEvents.CARD_SELECTED, cardSelectedPayload);
       }
     });
 

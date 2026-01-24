@@ -29,7 +29,7 @@ export default function RoomPage() {
   const selectedCard = currentPlayer?.card ?? null;
 
   // Calculate players with cards
-  const playersWithCards = gameState.players.filter((p) => p.hasCard).length;
+  const playersWithCards = gameState.players.filter((p) => p.card !== null).length;
 
   const handleJoinRoom = useCallback(async (playerName: string) => {
     setIsJoining(true);

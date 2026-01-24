@@ -96,8 +96,8 @@ describe('hooks/useGameState', () => {
       })
 
       expect(result.current.players).toHaveLength(2)
-      expect(result.current.players[0].hasCard).toBe(true)
-      expect(result.current.players[1].hasCard).toBe(false)
+      expect(result.current.players[0].card).toBe('5')
+      expect(result.current.players[1].card).toBeNull()
       expect(result.current.currentPlayerId).toBe('p1')
       expect(result.current.isRevealed).toBe(false)
     })
@@ -116,7 +116,7 @@ describe('hooks/useGameState', () => {
 
       expect(result.current.players).toHaveLength(1)
       expect(result.current.players[0].name).toBe('Alice')
-      expect(result.current.players[0].hasCard).toBe(false)
+      expect(result.current.players[0].card).toBeNull()
     })
   })
 
@@ -151,32 +151,7 @@ describe('hooks/useGameState', () => {
   })
 
   describe('card-selected event', () => {
-    it('updates hasCard for other players (no card value)', () => {
-      const mockSocket = createMockSocket()
-      const { result } = renderHook(() => useGameState(mockSocket as any))
-
-      // Setup initial state
-      act(() => {
-        mockSocket.emit(ServerEvents.ROOM_STATE, {
-          players: [{ id: 'p1', name: 'Alice', card: null, joinedAt: 1000 }],
-          isRevealed: false,
-          currentPlayerId: 'p2',
-        })
-      })
-
-      // Other player selects card (no cardValue sent)
-      act(() => {
-        mockSocket.emit(ServerEvents.CARD_SELECTED, {
-          playerId: 'p1',
-          hasCard: true,
-        })
-      })
-
-      expect(result.current.players[0].hasCard).toBe(true)
-      expect(result.current.players[0].card).toBeNull() // Card value not revealed
-    })
-
-    it('updates card value for selecting player', () => {
+    it('updates card value for player', () => {
       const mockSocket = createMockSocket()
       const { result } = renderHook(() => useGameState(mockSocket as any))
 
@@ -189,17 +164,39 @@ describe('hooks/useGameState', () => {
         })
       })
 
-      // Current player selects card (cardValue included)
+      // Player selects card
       act(() => {
         mockSocket.emit(ServerEvents.CARD_SELECTED, {
           playerId: 'p1',
-          hasCard: true,
-          cardValue: '5',
+          card: '5',
         })
       })
 
-      expect(result.current.players[0].hasCard).toBe(true)
       expect(result.current.players[0].card).toBe('5')
+    })
+
+    it('updates card to null when player unselects', () => {
+      const mockSocket = createMockSocket()
+      const { result } = renderHook(() => useGameState(mockSocket as any))
+
+      // Setup initial state with card selected
+      act(() => {
+        mockSocket.emit(ServerEvents.ROOM_STATE, {
+          players: [{ id: 'p1', name: 'Alice', card: '5', joinedAt: 1000 }],
+          isRevealed: false,
+          currentPlayerId: 'p1',
+        })
+      })
+
+      // Player unselects card
+      act(() => {
+        mockSocket.emit(ServerEvents.CARD_SELECTED, {
+          playerId: 'p1',
+          card: null,
+        })
+      })
+
+      expect(result.current.players[0].card).toBeNull()
     })
   })
 
@@ -244,7 +241,6 @@ describe('hooks/useGameState', () => {
 
       expect(result.current.isRevealed).toBe(false)
       expect(result.current.players[0].card).toBeNull()
-      expect(result.current.players[0].hasCard).toBe(false)
     })
   })
 

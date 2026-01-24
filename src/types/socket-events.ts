@@ -51,8 +51,7 @@ export interface PlayerLeftPayload {
 
 export interface CardSelectedPayload {
   playerId: string;
-  hasCard: boolean;  // true if card selected, but value hidden until reveal
-  cardValue?: CardValue | null;  // only sent to the selecting player for UI feedback
+  card: CardValue | null;  // card value sent to all players, UI uses isRevealed to hide
 }
 
 export interface CardsRevealedPayload {
