@@ -85,8 +85,8 @@ export function useSocket(): UseSocketReturn {
           return;
         }
 
-        // Get reconnect ID from localStorage if exists
-        const reconnectPlayerId = localStorage.getItem(`player_${roomCode}_id`) || undefined;
+        // Get reconnect ID from sessionStorage if exists (tab-isolated)
+        const reconnectPlayerId = sessionStorage.getItem(`player_${roomCode}_id`) || undefined;
 
         const payload: JoinRoomPayload = {
           roomCode,
@@ -97,10 +97,12 @@ export function useSocket(): UseSocketReturn {
 
         socket.emit(ClientEvents.JOIN_ROOM, payload, (response: JoinRoomResponse) => {
           if (response.success && response.playerId) {
-            // Store player info in localStorage for reconnection
-            localStorage.setItem(`player_${roomCode}_id`, response.playerId);
-            localStorage.setItem(`player_${roomCode}_name`, playerName);
-            localStorage.setItem(`player_${roomCode}_isModerator`, String(isModerator));
+            // Store player info in sessionStorage for reconnection (tab-isolated)
+            sessionStorage.setItem(`player_${roomCode}_id`, response.playerId);
+            sessionStorage.setItem(`player_${roomCode}_name`, playerName);
+            sessionStorage.setItem(`player_${roomCode}_isModerator`, String(isModerator));
+            // Store default name in localStorage for cross-session persistence
+            localStorage.setItem('scrumpoker_default_name', playerName);
           }
           resolve(response);
         });

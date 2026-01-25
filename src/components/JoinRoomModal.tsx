@@ -25,12 +25,19 @@ export default function JoinRoomModal({
   const [isModerator, setIsModerator] = useState(false);
   const [localError, setLocalError] = useState('');
 
-  // Try to get stored name and moderator status from localStorage
+  // Try to get stored name and moderator status
+  // Priority: sessionStorage (room-specific) > localStorage (default name)
   useEffect(() => {
-    const storedName = localStorage.getItem(`player_${roomCode}_name`);
-    const storedIsModerator = localStorage.getItem(`player_${roomCode}_isModerator`);
+    const storedName = sessionStorage.getItem(`player_${roomCode}_name`);
+    const storedIsModerator = sessionStorage.getItem(`player_${roomCode}_isModerator`);
     if (storedName) {
       setPlayerName(storedName);
+    } else {
+      // Fall back to default name from localStorage
+      const defaultName = localStorage.getItem('scrumpoker_default_name');
+      if (defaultName) {
+        setPlayerName(defaultName);
+      }
     }
     if (storedIsModerator === 'true') {
       setIsModerator(true);

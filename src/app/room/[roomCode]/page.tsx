@@ -41,17 +41,17 @@ export default function RoomPage() {
     } else {
       setJoinError(response.error || 'Failed to join room');
       // Clear stored data if join failed
-      localStorage.removeItem(`player_${roomCode}_id`);
-      localStorage.removeItem(`player_${roomCode}_name`);
-      localStorage.removeItem(`player_${roomCode}_isModerator`);
+      sessionStorage.removeItem(`player_${roomCode}_id`);
+      sessionStorage.removeItem(`player_${roomCode}_name`);
+      sessionStorage.removeItem(`player_${roomCode}_isModerator`);
     }
   }, [joinRoom, roomCode]);
 
-  // Check if already joined (from localStorage)
+  // Check if already joined (from sessionStorage - tab-isolated)
   useEffect(() => {
-    const storedPlayerId = localStorage.getItem(`player_${roomCode}_id`);
-    const storedPlayerName = localStorage.getItem(`player_${roomCode}_name`);
-    const storedIsModerator = localStorage.getItem(`player_${roomCode}_isModerator`) === 'true';
+    const storedPlayerId = sessionStorage.getItem(`player_${roomCode}_id`);
+    const storedPlayerName = sessionStorage.getItem(`player_${roomCode}_name`);
+    const storedIsModerator = sessionStorage.getItem(`player_${roomCode}_isModerator`) === 'true';
 
     // If we have stored data and socket is connected, try to rejoin
     if (storedPlayerId && storedPlayerName && socket && connectionStatus === 'connected' && !hasJoined) {
@@ -79,7 +79,7 @@ export default function RoomPage() {
 
   // Get stored player name for removed from room message
   const storedPlayerName = typeof window !== 'undefined'
-    ? localStorage.getItem(`player_${roomCode}_name`) || 'Player'
+    ? sessionStorage.getItem(`player_${roomCode}_name`) || 'Player'
     : 'Player';
 
   // Get current player name for navigation

@@ -20,9 +20,10 @@ export default function RemovedFromRoom({
   const router = useRouter();
 
   const handleRejoin = () => {
-    // Clear localStorage to allow rejoining
-    localStorage.removeItem(`player_${roomCode}_id`);
-    localStorage.removeItem(`player_${roomCode}_name`);
+    // Clear sessionStorage to allow rejoining
+    sessionStorage.removeItem(`player_${roomCode}_id`);
+    sessionStorage.removeItem(`player_${roomCode}_name`);
+    sessionStorage.removeItem(`player_${roomCode}_isModerator`);
     // Reload the page to rejoin
     window.location.reload();
   };
