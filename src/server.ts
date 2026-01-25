@@ -22,6 +22,13 @@ app.prepare().then(() => {
     try {
       const parsedUrl = parse(req.url!, true);
 
+      // Health check endpoint
+      if (parsedUrl.pathname === '/health' && req.method === 'GET') {
+        res.statusCode = 200;
+        res.end('OK');
+        return;
+      }
+
       // Handle admin stats API directly to access server-side room state
       if (parsedUrl.pathname === '/api/admin/stats' && req.method === 'GET') {
         const stats = getAdminStats();
