@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 
 interface JoinRoomModalProps {
   roomCode: string;
-  onJoin: (playerName: string) => void;
+  onJoin: (playerName: string, isModerator: boolean) => void;
   isOpen: boolean;
   error?: string;
   isJoining?: boolean;
@@ -22,13 +22,18 @@ export default function JoinRoomModal({
   isJoining = false,
 }: JoinRoomModalProps) {
   const [playerName, setPlayerName] = useState('');
+  const [isModerator, setIsModerator] = useState(false);
   const [localError, setLocalError] = useState('');
 
-  // Try to get stored name from localStorage
+  // Try to get stored name and moderator status from localStorage
   useEffect(() => {
     const storedName = localStorage.getItem(`player_${roomCode}_name`);
+    const storedIsModerator = localStorage.getItem(`player_${roomCode}_isModerator`);
     if (storedName) {
       setPlayerName(storedName);
+    }
+    if (storedIsModerator === 'true') {
+      setIsModerator(true);
     }
   }, [roomCode]);
 
@@ -47,7 +52,7 @@ export default function JoinRoomModal({
       return;
     }
 
-    onJoin(playerName.trim());
+    onJoin(playerName.trim(), isModerator);
   };
 
   if (!isOpen) return null;
@@ -104,6 +109,18 @@ export default function JoinRoomModal({
                 {(localError || error) && (
                   <span className="helper-text red-text">{localError || error}</span>
                 )}
+              </div>
+
+              <div style={{ marginTop: '15px' }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isModerator}
+                    onChange={(e) => setIsModerator(e.target.checked)}
+                    disabled={isJoining}
+                  />
+                  <span>Join as Moderator (observe only, no card selection)</span>
+                </label>
               </div>
 
               <button

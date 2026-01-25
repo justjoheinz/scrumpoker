@@ -59,7 +59,7 @@ export function setupSocketHandlers(io: SocketIOServer): void {
     socket.on(
       ClientEvents.JOIN_ROOM,
       (payload: JoinRoomPayload, callback: (response: JoinRoomResponse) => void) => {
-        const { roomCode, playerName, reconnectPlayerId } = payload;
+        const { roomCode, playerName, reconnectPlayerId, isModerator = false } = payload;
 
         // If reconnecting, clear the disconnection timeout
         if (reconnectPlayerId && disconnectedPlayers.has(reconnectPlayerId)) {
@@ -70,7 +70,7 @@ export function setupSocketHandlers(io: SocketIOServer): void {
         }
 
         // Add player to room
-        const result = addPlayer(roomCode, socket.id, playerName);
+        const result = addPlayer(roomCode, socket.id, playerName, isModerator);
 
         if (!result.success) {
           callback({ success: false, error: result.error });
@@ -108,6 +108,12 @@ export function setupSocketHandlers(io: SocketIOServer): void {
     // ========== SELECT CARD ==========
     socket.on(ClientEvents.SELECT_CARD, (payload: SelectCardPayload) => {
       const { roomCode, card } = payload;
+
+      // Moderators cannot select cards
+      const player = getPlayer(roomCode, socket.id);
+      if (player?.isModerator) {
+        return;
+      }
 
       // Handle both select and unselect
       const success = updatePlayerCard(roomCode, socket.id, card);

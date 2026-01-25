@@ -59,7 +59,8 @@ export function roomExists(roomCode: string): boolean {
 export function addPlayer(
   roomCode: string,
   playerId: string,
-  playerName: string
+  playerName: string,
+  isModerator: boolean = false
 ): { success: boolean; error?: string } {
   const room = createOrGetRoom(roomCode);
 
@@ -89,12 +90,14 @@ export function addPlayer(
     name: playerName,
     card: null,
     joinedAt: Date.now(),
+    isModerator,
   };
 
   room.players.set(playerId, player);
   room.lastActivity = Date.now();
 
-  log.info(`Player ${playerName} (${playerId}) joined room ${roomCode}`);
+  const role = isModerator ? 'Moderator' : 'Player';
+  log.info(`${role} ${playerName} (${playerId}) joined room ${roomCode}`);
 
   return { success: true };
 }

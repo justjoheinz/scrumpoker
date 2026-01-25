@@ -15,56 +15,99 @@ main {
   min-height: calc(100vh - 64px);
 }
 
-/* Navigation - always left-align brand logo (override Materialize centering) */
+/* Navigation styles */
 nav .brand-logo {
   left: 0.5rem !important;
   transform: none !important;
 }
 
-nav .right li {
+/* Nav room info - horizontal list of items */
+nav .nav-room-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+
+nav .nav-room-info .nav-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  float: none;
   line-height: 64px;
 }
 
-/* Responsive navigation */
-@media only screen and (max-width: 768px) {
-  nav .nav-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 0.5rem 15px;
-  }
+nav .nav-room-info .nav-info-item a {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
 
-  nav .nav-wrapper .brand-logo {
-    position: static;
-    left: auto !important;
-    line-height: 2rem;
+/* Status indicator dot */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.green {
+  background-color: #4caf50;
+}
+
+.status-dot.orange {
+  background-color: #ff9800;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-dot.red {
+  background-color: #f44336;
+}
+
+/* Responsive navigation - tablet and below */
+@media only screen and (max-width: 992px) {
+  nav .brand-logo {
     font-size: 1.5rem;
   }
 
-  nav .nav-wrapper .right {
-    position: static;
-    float: none;
-    margin: 0;
-  }
-
-  nav .right li {
-    line-height: 2rem;
-    padding: 0.25rem 0;
-  }
-
-  nav .right li span {
-    font-size: 0.85rem;
-  }
-
-  nav .right li span i {
-    font-size: 1rem !important;
+  nav .nav-room-info {
+    gap: 0.75rem;
   }
 }
 
-@media only screen and (max-width: 480px) {
-  nav .right li {
-    flex-wrap: wrap;
-    gap: 10px !important;
+/* Responsive navigation - mobile */
+@media only screen and (max-width: 600px) {
+  nav {
+    height: auto !important;
+    line-height: normal !important;
+  }
+
+  nav .nav-wrapper > .container {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0;
+  }
+
+  nav .brand-logo {
+    position: static !important;
+    left: auto !important;
+    font-size: 1.3rem;
+    line-height: 2.5rem;
+  }
+
+  nav .nav-room-info {
+    position: static;
+    float: none;
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+
+  nav .nav-room-info .nav-info-item {
+    line-height: 2rem;
+  }
+
+  main {
+    min-height: calc(100vh - 100px);
   }
 }
 

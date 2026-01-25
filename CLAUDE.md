@@ -159,8 +159,16 @@ All WebSocket events are strongly typed in `src/types/socket-events.ts`.
 
 - Loaded via CDN in `src/app/layout.tsx`
 - Material Icons for UI elements
-- Custom styles in `src/app/globals.css`
+- Minimal custom styles in `src/app/globals.css`
 - No JavaScript initialization needed for basic components
+
+**Styling Guidelines:**
+- **Prefer Materialize CSS classes** over custom CSS or inline styles
+- Use Materialize's built-in classes for colors (`teal`, `red-text`, `grey-text`), alignment (`valign-wrapper`), visibility (`hide-on-small-only`, `hide-on-med-and-down`), and layout
+- Use Materialize's responsive breakpoints: `s` (≤600px), `m` (≤992px), `l` (>992px)
+- Only add custom CSS in `globals.css` when Materialize doesn't provide the functionality
+- Avoid inline `style` attributes in components - use CSS classes instead
+- When custom CSS is necessary, use semantic class names and add responsive variants
 
 ### Docker Deployment
 

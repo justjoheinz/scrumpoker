@@ -105,6 +105,7 @@ describe('lib/game/room-manager', () => {
       expect(player?.name).toBe('Alice')
       expect(player?.card).toBeNull()
       expect(player?.joinedAt).toBeLessThanOrEqual(Date.now())
+      expect(player?.isModerator).toBe(false)
     })
 
     it('rejects duplicate player names (case-insensitive)', () => {
@@ -613,6 +614,104 @@ describe('lib/game/room-manager', () => {
 
       expect(result.success).toBe(false)
       expect(result.error).toContain('name already taken')
+    })
+  })
+
+  describe('addPlayer - moderator functionality', () => {
+    it('adds a non-moderator player by default', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+
+      const player = getPlayer(roomCode, 'player-1')
+      expect(player?.isModerator).toBe(false)
+    })
+
+    it('adds a moderator player when flag is true', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice', true)
+
+      const player = getPlayer(roomCode, 'player-1')
+      expect(player?.isModerator).toBe(true)
+    })
+
+    it('adds a non-moderator player when flag is explicitly false', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice', false)
+
+      const player = getPlayer(roomCode, 'player-1')
+      expect(player?.isModerator).toBe(false)
+    })
+
+    it('allows same room to have both moderators and players', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice', false)
+      addPlayer(roomCode, 'player-2', 'Bob', true)
+      addPlayer(roomCode, 'player-3', 'Charlie', false)
+
+      const players = getRoomPlayers(roomCode)
+      const moderators = players.filter(p => p.isModerator)
+      const nonModerators = players.filter(p => !p.isModerator)
+
+      expect(moderators).toHaveLength(1)
+      expect(moderators[0].name).toBe('Bob')
+      expect(nonModerators).toHaveLength(2)
+    })
+
+    it('moderator name uniqueness is checked against all players', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice', false)
+
+      const result = addPlayer(roomCode, 'player-2', 'Alice', true)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('name already taken')
+    })
+
+    it('player name uniqueness is checked against moderators', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice', true)
+
+      const result = addPlayer(roomCode, 'player-2', 'Alice', false)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('name already taken')
+    })
+
+    it('moderators count toward room capacity', () => {
+      const roomCode = uniqueRoomCode()
+
+      // Fill room with moderators
+      for (let i = 0; i < MAX_PLAYERS_PER_ROOM; i++) {
+        addPlayer(roomCode, `player-${i}`, `Mod${i}`, true)
+      }
+
+      const result = addPlayer(roomCode, 'extra-player', 'ExtraPlayer', false)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('full')
+    })
+
+    it('moderators appear in getRoomState', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice', false)
+      addPlayer(roomCode, 'player-2', 'ModBob', true)
+
+      const state = getRoomState(roomCode)
+
+      expect(state?.players).toHaveLength(2)
+      const moderator = state?.players.find(p => p.name === 'ModBob')
+      expect(moderator?.isModerator).toBe(true)
+    })
+
+    it('moderators appear in getRoomPlayers', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice', false)
+      addPlayer(roomCode, 'player-2', 'ModBob', true)
+
+      const players = getRoomPlayers(roomCode)
+
+      expect(players).toHaveLength(2)
+      expect(players.some(p => p.isModerator)).toBe(true)
     })
   })
 })

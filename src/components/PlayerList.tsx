@@ -1,5 +1,5 @@
 /**
- * PlayerList - Display all players with their card status and remove buttons
+ * PlayerList - Display all players with their card status
  */
 
 'use client';
@@ -10,14 +10,12 @@ interface PlayerListProps {
   players: Player[];
   currentPlayerId: string | null;
   isRevealed: boolean;
-  onRemovePlayer: (playerId: string) => void;
 }
 
 export default function PlayerList({
   players,
   currentPlayerId,
   isRevealed,
-  onRemovePlayer,
 }: PlayerListProps) {
   const renderCardStatus = (player: Player) => {
     if (player.card === null) {
@@ -102,15 +100,6 @@ export default function PlayerList({
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                     {renderCardStatus(player)}
-
-                    {/* Remove player button */}
-                    <button
-                      className="btn-small btn-floating waves-effect waves-light red"
-                      onClick={() => onRemovePlayer(player.id)}
-                      title={`Remove ${player.name}`}
-                    >
-                      <i className="material-icons">delete</i>
-                    </button>
                   </div>
                 </div>
               </li>

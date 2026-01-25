@@ -28,14 +28,11 @@ export default function RoomPage() {
   const currentPlayer = gameState.players.find((p) => p.id === gameState.currentPlayerId);
   const selectedCard = currentPlayer?.card ?? null;
 
-  // Calculate players with cards
-  const playersWithCards = gameState.players.filter((p) => p.card !== null).length;
-
-  const handleJoinRoom = useCallback(async (playerName: string) => {
+  const handleJoinRoom = useCallback(async (playerName: string, isModerator: boolean) => {
     setIsJoining(true);
     setJoinError('');
 
-    const response = await joinRoom(roomCode, playerName);
+    const response = await joinRoom(roomCode, playerName, isModerator);
 
     setIsJoining(false);
 
@@ -46,6 +43,7 @@ export default function RoomPage() {
       // Clear stored data if join failed
       localStorage.removeItem(`player_${roomCode}_id`);
       localStorage.removeItem(`player_${roomCode}_name`);
+      localStorage.removeItem(`player_${roomCode}_isModerator`);
     }
   }, [joinRoom, roomCode]);
 
@@ -53,10 +51,11 @@ export default function RoomPage() {
   useEffect(() => {
     const storedPlayerId = localStorage.getItem(`player_${roomCode}_id`);
     const storedPlayerName = localStorage.getItem(`player_${roomCode}_name`);
+    const storedIsModerator = localStorage.getItem(`player_${roomCode}_isModerator`) === 'true';
 
     // If we have stored data and socket is connected, try to rejoin
     if (storedPlayerId && storedPlayerName && socket && connectionStatus === 'connected' && !hasJoined) {
-      handleJoinRoom(storedPlayerName);
+      handleJoinRoom(storedPlayerName, storedIsModerator);
     }
   }, [socket, connectionStatus, roomCode, hasJoined, handleJoinRoom]);
 
@@ -64,9 +63,11 @@ export default function RoomPage() {
     selectCard(roomCode, card);
   };
 
-  const handleRemovePlayer = (playerId: string) => {
-    removePlayer(roomCode, playerId);
-  };
+  const handleLeaveRoom = useCallback(() => {
+    if (gameState.currentPlayerId) {
+      removePlayer(roomCode, gameState.currentPlayerId);
+    }
+  }, [removePlayer, roomCode, gameState.currentPlayerId]);
 
   const handleReveal = () => {
     revealCards(roomCode);
@@ -84,15 +85,23 @@ export default function RoomPage() {
   // Get current player name for navigation
   const currentPlayerName = currentPlayer?.name;
 
+  // Check if current player is a moderator
+  const isModerator = currentPlayer?.isModerator ?? false;
+
+  // Filter out moderators from player list and counts
+  const visiblePlayers = gameState.players.filter((p) => !p.isModerator);
+  const visiblePlayersWithCards = visiblePlayers.filter((p) => p.card !== null).length;
+
   return (
     <>
       <Navigation
         roomInfo={{
           roomCode,
           playerName: currentPlayerName,
-          playerCount: gameState.players.length,
+          playerCount: visiblePlayers.length,
           connectionStatus,
         }}
+        onLeaveRoom={hasJoined ? handleLeaveRoom : undefined}
       />
 
       {/* Removed from Room Overlay */}
@@ -134,8 +143,8 @@ export default function RoomPage() {
         <div className="container">
           <div className="row">
             <div className="col s12">
-            {/* Card Selector */}
-            {hasJoined && (
+            {/* Card Selector - hide for moderators */}
+            {hasJoined && !isModerator && (
               <CardSelector
                 selectedCard={selectedCard}
                 onSelectCard={handleSelectCard}
@@ -147,19 +156,18 @@ export default function RoomPage() {
             {hasJoined && (
               <GameControls
                 isRevealed={gameState.isRevealed}
-                playersWithCards={playersWithCards}
-                totalPlayers={gameState.players.length}
+                playersWithCards={visiblePlayersWithCards}
+                totalPlayers={visiblePlayers.length}
                 onReveal={handleReveal}
                 onReset={handleReset}
               />
             )}
-            {/* Player List */}
+            {/* Player List - excludes moderators */}
             {hasJoined && (
               <PlayerList
-                players={gameState.players}
+                players={visiblePlayers}
                 currentPlayerId={gameState.currentPlayerId}
                 isRevealed={gameState.isRevealed}
-                onRemovePlayer={handleRemovePlayer}
               />
             )}
           </div>

@@ -23,7 +23,7 @@ export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 're
 interface UseSocketReturn {
   socket: Socket | null;
   connectionStatus: ConnectionStatus;
-  joinRoom: (roomCode: string, playerName: string) => Promise<JoinRoomResponse>;
+  joinRoom: (roomCode: string, playerName: string, isModerator?: boolean) => Promise<JoinRoomResponse>;
   selectCard: (roomCode: string, card: CardValue | null) => void;
   revealCards: (roomCode: string) => void;
   resetGame: (roomCode: string) => void;
@@ -78,7 +78,7 @@ export function useSocket(): UseSocketReturn {
 
   // Join room with callback-based response
   const joinRoom = useCallback(
-    (roomCode: string, playerName: string): Promise<JoinRoomResponse> => {
+    (roomCode: string, playerName: string, isModerator: boolean = false): Promise<JoinRoomResponse> => {
       return new Promise((resolve) => {
         if (!socket) {
           resolve({ success: false, error: 'Socket not connected' });
@@ -92,6 +92,7 @@ export function useSocket(): UseSocketReturn {
           roomCode,
           playerName,
           reconnectPlayerId,
+          isModerator,
         };
 
         socket.emit(ClientEvents.JOIN_ROOM, payload, (response: JoinRoomResponse) => {
@@ -99,6 +100,7 @@ export function useSocket(): UseSocketReturn {
             // Store player info in localStorage for reconnection
             localStorage.setItem(`player_${roomCode}_id`, response.playerId);
             localStorage.setItem(`player_${roomCode}_name`, playerName);
+            localStorage.setItem(`player_${roomCode}_isModerator`, String(isModerator));
           }
           resolve(response);
         });

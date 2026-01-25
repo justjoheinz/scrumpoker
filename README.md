@@ -99,7 +99,34 @@ npm run dev
 
 ## Deployment
 
-### Docker Deployment
+### Pre-built Docker Images
+
+Docker images are automatically built and published to GitHub Container Registry on every push to `main`. Images are available for both `linux/amd64` and `linux/arm64` architectures.
+
+**Pull and run the latest image:**
+
+```bash
+docker pull ghcr.io/justjoheinz/scrumpoker:latest
+docker run -p 3000:3000 ghcr.io/justjoheinz/scrumpoker:latest
+```
+
+**Available tags:**
+
+| Tag | Description |
+|-----|-------------|
+| `latest` | Latest build from main branch |
+| `main` | Same as latest |
+| `sha-<commit>` | Specific commit (e.g., `sha-abc1234`) |
+
+**Run on a different host port:**
+
+```bash
+docker run -p 8080:3000 ghcr.io/justjoheinz/scrumpoker:latest
+```
+
+The application listens on port 3000 inside the container. Map it to any host port with `-p <host-port>:3000`.
+
+### Build Docker Image Locally
 
 Build and run with Docker:
 
@@ -175,6 +202,9 @@ scrumpoker/
 - `npm run build`: Build for production
 - `npm start`: Start production server
 - `npm run lint`: Run ESLint
+- `npm test`: Run tests in watch mode
+- `npm run test:run`: Run tests once
+- `npm run test:coverage`: Run tests with coverage report
 
 ### Key Configuration Files
 

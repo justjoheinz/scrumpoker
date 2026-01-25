@@ -31,6 +31,7 @@ export interface Player {
   name: string; // player name (unique within room)
   card: CardValue | null; // selected card (null if not chosen)
   joinedAt: number; // timestamp
+  isModerator: boolean; // moderator can observe and control but not vote
 }
 
 export interface Room {

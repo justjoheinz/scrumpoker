@@ -11,6 +11,7 @@ export interface JoinRoomPayload {
   roomCode: string;
   playerName: string;
   reconnectPlayerId?: string; // for reconnection attempts
+  isModerator?: boolean; // join as moderator (observe only, no card selection)
 }
 
 export interface SelectCardPayload {

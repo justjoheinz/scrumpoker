@@ -14,65 +14,80 @@ interface NavigationProps {
     playerCount: number;
     connectionStatus?: 'connected' | 'connecting' | 'disconnected' | 'reconnecting';
   };
+  onLeaveRoom?: () => void;
 }
 
-export default function Navigation({ roomInfo }: NavigationProps) {
+function getStatusColor(status: string): string {
+  switch (status) {
+    case 'connected': return 'green';
+    case 'reconnecting': return 'orange';
+    default: return 'red';
+  }
+}
+
+function getStatusText(status: string): string {
+  switch (status) {
+    case 'connected': return 'Connected';
+    case 'connecting': return 'Connecting...';
+    case 'reconnecting': return 'Reconnecting...';
+    default: return 'Disconnected';
+  }
+}
+
+export default function Navigation({ roomInfo, onLeaveRoom }: NavigationProps) {
   const pathname = usePathname();
   const isInRoom = pathname?.startsWith('/room/');
 
   return (
     <nav className="teal">
-      <div className="nav-wrapper container">
-        <Link href="/" className="brand-logo">
-          Scrum Poker
-        </Link>
+      <div className="nav-wrapper">
+        <div className="container">
+          <Link href="/" className="brand-logo">
+            Scrum Poker
+          </Link>
 
-        {isInRoom && roomInfo && (
-          <ul className="right">
-            <li style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingRight: '20px' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <i className="material-icons" style={{ fontSize: '1.2rem' }}>meeting_room</i>
+          {isInRoom && roomInfo && (
+            <ul className="right nav-room-info">
+              <li className="nav-info-item valign-wrapper">
+                <i className="material-icons tiny">meeting_room</i>
                 <strong>{roomInfo.roomCode}</strong>
-              </span>
+              </li>
 
               {roomInfo.playerName && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <i className="material-icons" style={{ fontSize: '1.2rem' }}>person</i>
-                  {roomInfo.playerName}
-                </span>
+                <li className="nav-info-item valign-wrapper hide-on-small-only">
+                  <i className="material-icons tiny">person</i>
+                  <span>{roomInfo.playerName}</span>
+                </li>
               )}
 
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <i className="material-icons" style={{ fontSize: '1.2rem' }}>group</i>
-                {roomInfo.playerCount}
-              </span>
+              <li className="nav-info-item valign-wrapper">
+                <i className="material-icons tiny">group</i>
+                <span>{roomInfo.playerCount}</span>
+              </li>
 
               {roomInfo.connectionStatus && (
-                <span style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.9rem'
-                }}>
-                  <span style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor:
-                      roomInfo.connectionStatus === 'connected' ? '#4caf50' :
-                      roomInfo.connectionStatus === 'reconnecting' ? '#ff9800' :
-                      '#f44336',
-                    animation: roomInfo.connectionStatus === 'connecting' || roomInfo.connectionStatus === 'reconnecting' ? 'pulse 1.5s ease-in-out infinite' : 'none'
-                  }} />
-                  {roomInfo.connectionStatus === 'connected' ? 'Connected' :
-                   roomInfo.connectionStatus === 'connecting' ? 'Connecting...' :
-                   roomInfo.connectionStatus === 'reconnecting' ? 'Reconnecting...' :
-                   'Disconnected'}
-                </span>
+                <li className="nav-info-item valign-wrapper hide-on-small-only">
+                  <span className={`status-dot ${getStatusColor(roomInfo.connectionStatus)}`} />
+                  <span className="hide-on-med-only">{getStatusText(roomInfo.connectionStatus)}</span>
+                </li>
               )}
-            </li>
-          </ul>
-        )}
+
+              {onLeaveRoom && (
+                <li className="nav-info-item">
+                  <a
+                    href="#!"
+                    onClick={(e) => { e.preventDefault(); onLeaveRoom(); }}
+                    className="waves-effect waves-light red-text text-lighten-3 valign-wrapper"
+                    title="Leave Room"
+                  >
+                    <i className="material-icons tiny">exit_to_app</i>
+                    <span className="hide-on-small-only">Leave</span>
+                  </a>
+                </li>
+              )}
+            </ul>
+          )}
+        </div>
       </div>
     </nav>
   );
