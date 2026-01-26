@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import Footer from '@/components/Footer';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <Footer />
         <Script
           src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
           strategy="afterInteractive"
