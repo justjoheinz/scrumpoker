@@ -43,9 +43,27 @@ export default function Navigation({ roomInfo, onLeaveRoom }: NavigationProps) {
   const copyRoomLink = useCallback(async () => {
     if (!roomInfo?.roomCode) return;
     const url = `${window.location.origin}/room/${roomInfo.roomCode}`;
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        // Fallback for non-secure contexts (HTTP on non-localhost)
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // If all copy methods fail, show the URL in an alert
+      window.prompt('Copy this link:', url);
+    }
   }, [roomInfo?.roomCode]);
 
   return (
