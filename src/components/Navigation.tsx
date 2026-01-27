@@ -4,6 +4,7 @@
 
 'use client';
 
+import { useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
@@ -37,6 +38,15 @@ function getStatusText(status: string): string {
 export default function Navigation({ roomInfo, onLeaveRoom }: NavigationProps) {
   const pathname = usePathname();
   const isInRoom = pathname?.startsWith('/room/');
+  const [copied, setCopied] = useState(false);
+
+  const copyRoomLink = useCallback(async () => {
+    if (!roomInfo?.roomCode) return;
+    const url = `${window.location.origin}/room/${roomInfo.roomCode}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [roomInfo?.roomCode]);
 
   return (
     <nav className="teal">
@@ -48,9 +58,13 @@ export default function Navigation({ roomInfo, onLeaveRoom }: NavigationProps) {
 
           {isInRoom && roomInfo && (
             <ul className="right nav-room-info">
-              <li className="nav-info-item valign-wrapper">
-                <i className="material-icons tiny">meeting_room</i>
-                <strong>{roomInfo.roomCode}</strong>
+              <li
+                className="nav-info-item valign-wrapper room-code-copy"
+                onClick={copyRoomLink}
+                title="Click to copy room link"
+              >
+                <i className="material-icons tiny">{copied ? 'check' : 'meeting_room'}</i>
+                <strong>{copied ? 'Copied!' : roomInfo.roomCode}</strong>
               </li>
 
               {roomInfo.playerName && (
@@ -59,11 +73,6 @@ export default function Navigation({ roomInfo, onLeaveRoom }: NavigationProps) {
                   <span>{roomInfo.playerName}</span>
                 </li>
               )}
-
-              <li className="nav-info-item valign-wrapper">
-                <i className="material-icons tiny">group</i>
-                <span>{roomInfo.playerCount}</span>
-              </li>
 
               {roomInfo.connectionStatus && (
                 <li className="nav-info-item valign-wrapper hide-on-small-only">

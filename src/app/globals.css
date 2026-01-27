@@ -53,6 +53,15 @@ nav .nav-room-info .nav-info-item a {
   gap: 0.4rem;
 }
 
+nav .nav-room-info .room-code-copy {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+nav .nav-room-info .room-code-copy:hover {
+  opacity: 0.8;
+}
+
 /* Status indicator dot */
 .status-dot {
   display: inline-block;

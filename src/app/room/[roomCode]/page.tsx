@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useGameState } from '@/hooks/useGameState';
@@ -15,6 +15,7 @@ import { CardValue } from '@/types/game';
 
 export default function RoomPage() {
   const params = useParams();
+  const router = useRouter();
   const roomCode = params.roomCode as string;
 
   const { socket, connectionStatus, joinRoom, selectCard, removePlayer, revealCards, resetGame } = useSocket();
@@ -134,6 +135,7 @@ export default function RoomPage() {
       <JoinRoomModal
         roomCode={roomCode}
         onJoin={handleJoinRoom}
+        onCancel={() => router.push('/')}
         isOpen={!hasJoined && connectionStatus === 'connected'}
         error={joinError}
         isJoining={isJoining}

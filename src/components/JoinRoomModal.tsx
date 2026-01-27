@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 interface JoinRoomModalProps {
   roomCode: string;
   onJoin: (playerName: string, isModerator: boolean) => void;
+  onCancel?: () => void;
   isOpen: boolean;
   error?: string;
   isJoining?: boolean;
@@ -17,6 +18,7 @@ interface JoinRoomModalProps {
 export default function JoinRoomModal({
   roomCode,
   onJoin,
+  onCancel,
   isOpen,
   error,
   isJoining = false,
@@ -130,15 +132,33 @@ export default function JoinRoomModal({
                 </label>
               </div>
 
-              <button
-                type="submit"
-                className="btn waves-effect waves-light teal"
-                disabled={isJoining || !playerName.trim()}
-                style={{ marginTop: '20px', width: '100%' }}
-              >
-                {isJoining ? 'Joining...' : 'Join Room'}
-                <i className="material-icons right">arrow_forward</i>
-              </button>
+              <div className="row" style={{ marginTop: '20px', marginBottom: 0 }}>
+                <div className="col s6">
+                  {onCancel && (
+                    <button
+                      type="button"
+                      className="btn-flat waves-effect waves-light grey-text text-darken-2"
+                      onClick={onCancel}
+                      disabled={isJoining}
+                      style={{ width: '100%' }}
+                    >
+                      <i className="material-icons left">arrow_back</i>
+                      Cancel
+                    </button>
+                  )}
+                </div>
+                <div className={onCancel ? 'col s6' : 'col s12'}>
+                  <button
+                    type="submit"
+                    className="btn waves-effect waves-light teal"
+                    disabled={isJoining || !playerName.trim()}
+                    style={{ width: '100%' }}
+                  >
+                    {isJoining ? 'Joining...' : 'Join Room'}
+                    <i className="material-icons right">arrow_forward</i>
+                  </button>
+                </div>
+              </div>
             </form>
           </div>
         </div>
