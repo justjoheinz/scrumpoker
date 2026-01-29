@@ -14,8 +14,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" style={{ colorScheme: 'light dark' }}>
       <head>
+        {/* Theme detection - runs before render to prevent flash */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            var theme = localStorage.getItem('theme');
+            if (!theme) {
+              theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('theme', theme);
+          })();
+        `}} />
         {/* Preconnect hints for faster CDN loading */}
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

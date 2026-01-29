@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { customAlphabet } from 'nanoid';
 
@@ -12,6 +12,23 @@ export default function Home() {
   const [roomCode, setRoomCode] = useState('');
   const [error, setError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+
+  // Debug: Log detected color scheme
+  useEffect(() => {
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const computedBgColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg-page').trim();
+
+    console.log('[Theme Debug] prefersDark:', darkModeQuery.matches);
+    console.log('[Theme Debug] theme:', darkModeQuery.matches ? 'DARK' : 'LIGHT');
+    console.log('[Theme Debug] --color-bg-page:', computedBgColor);
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      console.log('[Theme Debug] Theme changed to:', e.matches ? 'DARK' : 'LIGHT');
+    };
+    darkModeQuery.addEventListener('change', handleChange);
+
+    return () => darkModeQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const handleCreateRoom = () => {
     setIsCreating(true);

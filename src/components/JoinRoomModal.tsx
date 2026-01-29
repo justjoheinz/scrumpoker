@@ -67,31 +67,8 @@ export default function JoinRoomModal({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="modal"
-      style={{
-        display: 'block',
-        position: 'fixed',
-        zIndex: 1000,
-        left: 0,
-        top: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      }}
-    >
-      <div
-        className="modal-content"
-        style={{
-          backgroundColor: '#fefefe',
-          margin: '10% auto',
-          padding: '20px',
-          border: '1px solid #888',
-          width: '90%',
-          maxWidth: '500px',
-          borderRadius: '4px',
-        }}
-      >
+    <div className="modal-overlay">
+      <div className="modal-content-themed">
         <div className="card">
           <div className="card-content">
             <span className="card-title">Join Room: {roomCode}</span>

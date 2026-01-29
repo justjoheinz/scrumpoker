@@ -33,24 +33,11 @@ export default function RemovedFromRoom({
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 2000,
-      }}
-    >
+    <div className="removed-overlay">
       <div className="card" style={{ maxWidth: '600px', width: '90%' }}>
         <div className="card-content">
           <span className="card-title">
-            <i className="material-icons left" style={{ color: '#ff9800' }}>
+            <i className="material-icons left" style={{ color: 'var(--color-status-orange)' }}>
               info
             </i>
             {reason === 'self' ? 'You Left the Room' : 'You Were Removed from the Room'}
@@ -69,26 +56,19 @@ export default function RemovedFromRoom({
             )}
           </p>
 
-          <div
-            style={{
-              marginTop: '20px',
-              padding: '15px',
-              backgroundColor: '#f5f5f5',
-              borderRadius: '4px',
-            }}
-          >
-            <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
+          <div className="removed-info-box">
+            <p className="removed-info-text">
               <strong>Room Code:</strong> {roomCode}
             </p>
-            <p style={{ margin: '10px 0 0 0', fontSize: '0.9rem', color: '#666' }}>
+            <p className="removed-info-text-spaced">
               <strong>Room URL:</strong>{' '}
-              <code style={{ backgroundColor: '#fff', padding: '2px 6px', borderRadius: '3px' }}>
+              <code className="removed-code">
                 {window.location.origin}/room/{roomCode}
               </code>
             </p>
           </div>
 
-          <p style={{ marginTop: '20px', color: '#666' }}>
+          <p className="removed-help-text">
             You can rejoin the room by clicking the button below or by visiting the room URL again.
           </p>
         </div>

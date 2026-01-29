@@ -31,18 +31,7 @@ export default function PlayerList({
       // Show actual card value
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div
-            className="poker-card"
-            style={{
-              display: 'inline-block',
-              padding: '10px 20px',
-              backgroundColor: '#2196f3',
-              color: 'white',
-              borderRadius: '4px',
-              fontWeight: 'bold',
-              fontSize: '1.2rem',
-            }}
-          >
+          <div className="poker-card player-card-revealed">
             {player.card}
           </div>
         </div>
