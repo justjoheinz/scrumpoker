@@ -14,6 +14,7 @@ import {
   getActiveRoomCount,
   getAdminStats,
   cleanupRooms,
+  reconnectPlayer,
 } from '@/lib/game/room-manager'
 import { MAX_PLAYERS_PER_ROOM, CARD_VALUES, ROOM_CLEANUP_TIMEOUT } from '@/types/game'
 
@@ -712,6 +713,108 @@ describe('lib/game/room-manager', () => {
 
       expect(players).toHaveLength(2)
       expect(players.some(p => p.isModerator)).toBe(true)
+    })
+  })
+
+  describe('reconnectPlayer', () => {
+    it('updates player socket ID in place', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'old-socket-id', 'Alice')
+
+      const result = reconnectPlayer(roomCode, 'old-socket-id', 'new-socket-id')
+
+      expect(result).toBeDefined()
+      expect(result?.id).toBe('new-socket-id')
+      expect(result?.name).toBe('Alice')
+    })
+
+    it('preserves player card selection', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'old-socket-id', 'Alice')
+      updatePlayerCard(roomCode, 'old-socket-id', '8')
+
+      const result = reconnectPlayer(roomCode, 'old-socket-id', 'new-socket-id')
+
+      expect(result?.card).toBe('8')
+    })
+
+    it('preserves moderator status', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'old-socket-id', 'Alice', true)
+
+      const result = reconnectPlayer(roomCode, 'old-socket-id', 'new-socket-id')
+
+      expect(result?.isModerator).toBe(true)
+    })
+
+    it('removes old socket ID from room players Map', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'old-socket-id', 'Alice')
+
+      reconnectPlayer(roomCode, 'old-socket-id', 'new-socket-id')
+
+      expect(getPlayer(roomCode, 'old-socket-id')).toBeUndefined()
+      expect(getPlayer(roomCode, 'new-socket-id')).toBeDefined()
+    })
+
+    it('returns undefined for non-existent room', () => {
+      const result = reconnectPlayer('NON-EXISTENT', 'old-id', 'new-id')
+      expect(result).toBeUndefined()
+    })
+
+    it('returns undefined for non-existent player', () => {
+      const roomCode = uniqueRoomCode()
+      createOrGetRoom(roomCode)
+
+      const result = reconnectPlayer(roomCode, 'non-existent', 'new-id')
+
+      expect(result).toBeUndefined()
+    })
+
+    it('preserves joinedAt timestamp', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'old-socket-id', 'Alice')
+      const originalJoinedAt = getPlayer(roomCode, 'old-socket-id')?.joinedAt
+
+      const result = reconnectPlayer(roomCode, 'old-socket-id', 'new-socket-id')
+
+      expect(result?.joinedAt).toBe(originalJoinedAt)
+    })
+
+    it('allows player to continue using room after reconnection', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'old-socket-id', 'Alice')
+
+      reconnectPlayer(roomCode, 'old-socket-id', 'new-socket-id')
+
+      // Should be able to update card with new ID
+      const updateResult = updatePlayerCard(roomCode, 'new-socket-id', '13')
+      expect(updateResult).toBe(true)
+      expect(getPlayer(roomCode, 'new-socket-id')?.card).toBe('13')
+    })
+
+    it('allows same name to be used after player is removed', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      removePlayer(roomCode, 'player-1')
+
+      // Name should now be available
+      const result = addPlayer(roomCode, 'player-2', 'Alice')
+      expect(result.success).toBe(true)
+    })
+
+    it('does not affect other players in the room', () => {
+      const roomCode = uniqueRoomCode()
+      addPlayer(roomCode, 'player-1', 'Alice')
+      addPlayer(roomCode, 'player-2', 'Bob')
+      updatePlayerCard(roomCode, 'player-2', '5')
+
+      reconnectPlayer(roomCode, 'player-1', 'new-socket-id')
+
+      // Bob should be unaffected
+      const bob = getPlayer(roomCode, 'player-2')
+      expect(bob?.name).toBe('Bob')
+      expect(bob?.card).toBe('5')
     })
   })
 })

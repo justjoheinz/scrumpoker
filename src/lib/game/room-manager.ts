@@ -134,6 +134,31 @@ export function getPlayer(roomCode: string, playerId: string): Player | undefine
 }
 
 /**
+ * Reconnect a player with a new socket ID, preserving their state.
+ * Used when a player reloads the page during the reconnection grace period.
+ */
+export function reconnectPlayer(
+  roomCode: string,
+  oldPlayerId: string,
+  newPlayerId: string
+): Player | undefined {
+  const room = rooms.get(roomCode);
+  if (!room) return undefined;
+
+  const player = room.players.get(oldPlayerId);
+  if (!player) return undefined;
+
+  // Update player ID and rekey the Map
+  player.id = newPlayerId;
+  room.players.delete(oldPlayerId);
+  room.players.set(newPlayerId, player);
+  room.lastActivity = Date.now();
+
+  log.info(`Player ${player.name} reconnected: ${oldPlayerId} -> ${newPlayerId}`);
+  return player;
+}
+
+/**
  * Update player's card selection (or unselect if card is null)
  */
 export function updatePlayerCard(

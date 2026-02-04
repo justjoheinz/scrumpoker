@@ -27,7 +27,9 @@ import {
   updatePlayerCard,
   getRoomState,
   getPlayer,
+  reconnectPlayer,
 } from '../game/room-manager';
+import { Player } from '@/types/game';
 import {
   revealCards,
   resetGame,
@@ -61,20 +63,37 @@ export function setupSocketHandlers(io: SocketIOServer): void {
       (payload: JoinRoomPayload, callback: (response: JoinRoomResponse) => void) => {
         const { roomCode, playerName, reconnectPlayerId, isModerator = false } = payload;
 
-        // If reconnecting, clear the disconnection timeout
-        if (reconnectPlayerId && disconnectedPlayers.has(reconnectPlayerId)) {
-          const { timeout } = disconnectedPlayers.get(reconnectPlayerId)!;
-          clearTimeout(timeout);
-          disconnectedPlayers.delete(reconnectPlayerId);
-          log.debug(`Player ${reconnectPlayerId} reconnected`);
+        let player: Player | undefined;
+        let isReconnection = false;
+
+        // Attempt reconnection if valid reconnectPlayerId provided
+        if (reconnectPlayerId) {
+          // Clear any pending disconnect timeout
+          if (disconnectedPlayers.has(reconnectPlayerId)) {
+            const { timeout } = disconnectedPlayers.get(reconnectPlayerId)!;
+            clearTimeout(timeout);
+            disconnectedPlayers.delete(reconnectPlayerId);
+          }
+
+          // Try to reconnect if old player exists in room with matching name
+          // (handles race condition where join-room arrives before disconnect)
+          const oldPlayer = getPlayer(roomCode, reconnectPlayerId);
+          if (oldPlayer && oldPlayer.name.toLowerCase() === playerName.toLowerCase()) {
+            player = reconnectPlayer(roomCode, reconnectPlayerId, socket.id);
+            if (player) {
+              isReconnection = true;
+            }
+          }
         }
 
-        // Add player to room
-        const result = addPlayer(roomCode, socket.id, playerName, isModerator);
-
-        if (!result.success) {
-          callback({ success: false, error: result.error });
-          return;
+        // Fall back to normal join if not reconnecting
+        if (!player) {
+          const result = addPlayer(roomCode, socket.id, playerName, isModerator);
+          if (!result.success) {
+            callback({ success: false, error: result.error });
+            return;
+          }
+          player = getPlayer(roomCode, socket.id);
         }
 
         // Join socket.io room
@@ -95,9 +114,8 @@ export function setupSocketHandlers(io: SocketIOServer): void {
           };
           socket.emit(ServerEvents.ROOM_STATE, statePayload);
 
-          // Notify other players
-          const player = getPlayer(roomCode, socket.id);
-          if (player) {
+          // Only broadcast join if NOT a reconnection (seamless for others)
+          if (!isReconnection && player) {
             const joinedPayload: PlayerJoinedPayload = { player };
             socket.to(roomCode).emit(ServerEvents.PLAYER_JOINED, joinedPayload);
           }
