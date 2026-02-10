@@ -7,7 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install ALL dependencies (including devDependencies for build)
-RUN npm ci
+# Use BuildKit cache mount to persist npm cache across builds
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 # Copy source code
 COPY . .
@@ -30,7 +31,8 @@ ENV NODE_ENV=production
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --omit=dev
+# Use BuildKit cache mount to persist npm cache across builds
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 
 # Copy built application from builder
 COPY --from=builder /app/.next ./.next
