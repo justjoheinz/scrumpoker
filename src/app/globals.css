@@ -199,6 +199,30 @@ footer .footer-content {
   font-size: 0.85rem;
 }
 
+footer .footer-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+footer .theme-toggle {
+  position: absolute;
+  right: 0;
+  padding: 0 0.5rem;
+  min-width: auto;
+  height: 36px;
+  line-height: 36px;
+}
+
+footer .theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+footer .theme-toggle i {
+  font-size: 1.3rem;
+}
+
 /* Navigation styles */
 nav .brand-logo {
   left: 0.5rem !important;
