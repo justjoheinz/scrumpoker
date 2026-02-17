@@ -258,6 +258,12 @@ tests/
 
 - Designed for Docker deployment on VPS with Node.js support
 - Port 3000 exposed (configurable via `PORT` env var)
-- No environment variables required (all config in code)
 - WebSockets require persistent connections (not compatible with serverless platforms like Vercel)
 - Server restart loses all room state (by design for stateless requirement)
+
+**Environment Variables:**
+- `PORT` - Server port (default: 3000)
+- `NEXT_PUBLIC_BASE_PATH` - URL subpath when mounting behind reverse proxy (e.g., `/scrumpoker`). Leave empty for root mounting. This affects:
+  - Next.js routing and asset paths
+  - Socket.io connection path
+  - Health check and API endpoints

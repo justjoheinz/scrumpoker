@@ -42,7 +42,8 @@ export default function Navigation({ roomInfo, onLeaveRoom }: NavigationProps) {
 
   const copyRoomLink = useCallback(async () => {
     if (!roomInfo?.roomCode) return;
-    const url = `${window.location.origin}/room/${roomInfo.roomCode}`;
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    const url = `${window.location.origin}${basePath}/room/${roomInfo.roomCode}`;
 
     try {
       if (navigator.clipboard?.writeText) {
