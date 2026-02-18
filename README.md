@@ -161,33 +161,8 @@ NODE_ENV=production npm start
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Server port | `3000` |
-| `NODE_ENV` | Environment mode | `development` |
-| `NEXT_PUBLIC_BASE_PATH` | URL subpath for reverse proxy mounting (e.g., `/scrumpoker`) | `` (empty) |
-
-### Mounting Behind a Reverse Proxy
-
-When deploying behind nginx, Apache, or another reverse proxy that mounts the application under a subpath (e.g., `https://example.com/scrumpoker`), set the `NEXT_PUBLIC_BASE_PATH` environment variable:
-
-**Docker run:**
-```bash
-docker run -d -p 3000:3000 -e NEXT_PUBLIC_BASE_PATH=/scrumpoker ghcr.io/justjoheinz/scrumpoker:latest
-```
-
-**Docker Compose:**
-```yaml
-services:
-  scrumpoker:
-    image: ghcr.io/justjoheinz/scrumpoker:latest
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_BASE_PATH=/scrumpoker
-```
-
-**Note:** The base path must start with `/` and have no trailing slash. Rebuild is required when changing this value.
+- `PORT`: Server port (default: 3000)
+- `NODE_ENV`: Environment mode (development/production)
 
 ## Project Structure
 

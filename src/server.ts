@@ -11,7 +11,6 @@ const log = createLogger('server');
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
 const port = parseInt(process.env.PORT || '3000', 10);
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 // Initialize Next.js
 const app = next({ dev, hostname, port });
@@ -23,17 +22,15 @@ app.prepare().then(() => {
     try {
       const parsedUrl = parse(req.url!, true);
 
-      // Health check endpoint (supports both with and without basePath)
-      const healthPath = basePath ? `${basePath}/health` : '/health';
-      if ((parsedUrl.pathname === '/health' || parsedUrl.pathname === healthPath) && req.method === 'GET') {
+      // Health check endpoint
+      if (parsedUrl.pathname === '/health' && req.method === 'GET') {
         res.statusCode = 200;
         res.end('OK');
         return;
       }
 
       // Handle admin stats API directly to access server-side room state
-      const adminStatsPath = basePath ? `${basePath}/api/admin/stats` : '/api/admin/stats';
-      if ((parsedUrl.pathname === '/api/admin/stats' || parsedUrl.pathname === adminStatsPath) && req.method === 'GET') {
+      if (parsedUrl.pathname === '/api/admin/stats' && req.method === 'GET') {
         const stats = getAdminStats();
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(stats));
@@ -50,7 +47,6 @@ app.prepare().then(() => {
 
   // Create Socket.io server
   const io = new SocketIOServer(httpServer, {
-    path: `${basePath}/socket.io`,
     cors: {
       origin: dev ? '*' : false, // Allow all origins in dev, restrict in production
       methods: ['GET', 'POST'],
@@ -62,9 +58,9 @@ app.prepare().then(() => {
 
   // Start server
   httpServer.listen(port, () => {
-    log.info(`Ready on http://${hostname}:${port}${basePath}`);
+    log.info(`Ready on http://${hostname}:${port}`);
     log.info(`Environment: ${dev ? 'development' : 'production'}`);
-    log.info(`Socket.io server running on path: ${basePath}/socket.io`);
+    log.info('Socket.io server running');
   });
 
   // Graceful shutdown
