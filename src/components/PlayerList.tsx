@@ -22,7 +22,9 @@ export default function PlayerList({
       // No card selected
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span className="grey-text">No card</span>
+          <div className="player-card-placeholder">
+            <span className="grey-text">No card</span>
+          </div>
         </div>
       );
     }
@@ -41,15 +43,7 @@ export default function PlayerList({
     // Card selected but not revealed - show face down
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div
-          className="card-face-down"
-          style={{
-            display: 'inline-block',
-            padding: '10px 20px',
-            borderRadius: '4px',
-            fontSize: '1.2rem',
-          }}
-        >
+        <div className="card-face-down">
           <i className="material-icons">style</i>
         </div>
       </div>

@@ -357,16 +357,21 @@ nav .nav-room-info .room-code-copy:hover {
 .card-face-down {
   background: linear-gradient(135deg, var(--color-card-facedown-start) 0%, var(--color-card-facedown-end) 100%);
   color: white;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 80px;
+  padding: 10px 20px;
   border-radius: 4px;
+  font-size: 1.2rem;
+  min-width: 80px;
+  box-sizing: border-box;
 }
 
 .poker-card {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  border: 3px solid transparent;
+  box-sizing: border-box;
 }
 
 .poker-card:hover {
@@ -375,7 +380,7 @@ nav .nav-room-info .room-code-copy:hover {
 }
 
 .poker-card.selected {
-  border: 3px solid var(--color-card-selected-border);
+  border-color: var(--color-card-selected-border);
   background-color: var(--color-card-selected-bg);
   transform: translateY(-5px);
 }
@@ -520,13 +525,28 @@ nav .nav-room-info .room-code-copy:hover {
 
 /* PlayerList revealed card style */
 .player-card-revealed {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px 20px;
   background-color: var(--color-card-revealed-bg);
   color: white;
   border-radius: 4px;
   font-weight: bold;
   font-size: 1.2rem;
+  min-width: 80px;
+  box-sizing: border-box;
+}
+
+/* PlayerList placeholder - matches card dimensions */
+.player-card-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  min-width: 80px;
+  box-sizing: border-box;
 }
 
 @keyframes pulse {

@@ -62,9 +62,6 @@ export default function GameControls({
             <p className="grey-text">
               <i className="material-icons tiny">info</i> {playersWithCards}/
               {totalPlayers} players have selected cards
-              {!canReveal && (
-                <span> - Need at least 1 player with a card to reveal</span>
-              )}
             </p>
           )}
           {isRevealed && <p>&nbsp;</p>}
