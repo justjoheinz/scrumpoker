@@ -42,13 +42,13 @@ export default function Navigation({ roomInfo, onLeaveRoom }: NavigationProps) {
 
   const copyRoomLink = useCallback(async () => {
     if (!roomInfo?.roomCode) return;
-    const url = `${window.location.origin}/room/${roomInfo.roomCode}`;
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    const url = `${window.location.origin}${basePath}/room/${roomInfo.roomCode}`;
 
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
       } else {
-        // Fallback for non-secure contexts (HTTP on non-localhost)
         const textarea = document.createElement('textarea');
         textarea.value = url;
         textarea.style.position = 'fixed';
@@ -61,61 +61,59 @@ export default function Navigation({ roomInfo, onLeaveRoom }: NavigationProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // If all copy methods fail, show the URL in an alert
       window.prompt('Copy this link:', url);
     }
   }, [roomInfo?.roomCode]);
 
   return (
-    <nav className="teal">
-      <div className="nav-wrapper">
-        <div className="container">
-          <Link href="/" className="brand-logo">
+    <header className="brand-header">
+      <div className="container">
+        <div className="brand-header-inner">
+          <Link href="/" className="brand-logo-link">
             Scrum Poker
           </Link>
 
           {isInRoom && roomInfo && (
-            <ul className="right nav-room-info">
-              <li
-                className="nav-info-item valign-wrapper room-code-copy"
+            <div className="nav-room-info">
+              <div
+                className="nav-info-item room-code-copy"
                 onClick={copyRoomLink}
                 title="Click to copy room link"
               >
                 <i className="material-icons tiny">{copied ? 'check' : 'meeting_room'}</i>
                 <strong>{copied ? 'Copied!' : roomInfo.roomCode}</strong>
-              </li>
+              </div>
 
               {roomInfo.playerName && (
-                <li className="nav-info-item valign-wrapper hide-on-small-only">
+                <div className="nav-info-item hide-on-small-only">
                   <i className="material-icons tiny">person</i>
                   <span>{roomInfo.playerName}</span>
-                </li>
+                </div>
               )}
 
               {roomInfo.connectionStatus && (
-                <li className="nav-info-item valign-wrapper hide-on-small-only">
+                <div className="nav-info-item hide-on-small-only">
                   <span className={`status-dot ${getStatusColor(roomInfo.connectionStatus)}`} />
                   <span className="hide-on-med-only">{getStatusText(roomInfo.connectionStatus)}</span>
-                </li>
+                </div>
               )}
 
               {onLeaveRoom && (
-                <li className="nav-info-item">
+                <div className="nav-info-item">
                   <a
                     href="#!"
                     onClick={(e) => { e.preventDefault(); onLeaveRoom(); }}
-                    className="waves-effect waves-light red-text text-lighten-3 valign-wrapper"
+                    className="nav-leave"
                     title="Leave Room"
                   >
                     <i className="material-icons tiny">exit_to_app</i>
-                    <span className="hide-on-small-only">Leave</span>
                   </a>
-                </li>
+                </div>
               )}
-            </ul>
+            </div>
           )}
         </div>
       </div>
-    </nav>
+    </header>
   );
 }

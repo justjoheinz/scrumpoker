@@ -27,35 +27,26 @@ export default function JoinRoomModal({
   const [isModerator, setIsModerator] = useState(false);
   const [localError, setLocalError] = useState('');
 
-  // Try to get stored name and moderator status
-  // Priority: sessionStorage (room-specific) > localStorage (default name)
   useEffect(() => {
     const storedName = sessionStorage.getItem(`player_${roomCode}_name`);
     const storedIsModerator = sessionStorage.getItem(`player_${roomCode}_isModerator`);
     if (storedName) {
       setPlayerName(storedName);
     } else {
-      // Fall back to default name from localStorage
       const defaultName = localStorage.getItem('scrumpoker_default_name');
-      if (defaultName) {
-        setPlayerName(defaultName);
-      }
+      if (defaultName) setPlayerName(defaultName);
     }
-    if (storedIsModerator === 'true') {
-      setIsModerator(true);
-    }
+    if (storedIsModerator === 'true') setIsModerator(true);
   }, [roomCode]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError('');
 
-    // Validate name
     if (!playerName.trim()) {
       setLocalError('Please enter your name');
       return;
     }
-
     if (playerName.trim().length > 50) {
       setLocalError('Name must be 50 characters or less');
       return;
@@ -68,76 +59,65 @@ export default function JoinRoomModal({
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content-themed">
-        <div className="card">
-          <div className="card-content">
-            <span className="card-title">Join Room: {roomCode}</span>
-            <p>Enter your name to join the estimation session</p>
+      <div className="card modal-card">
+        <div className="card-content">
+          <span className="section-label">Join Room {roomCode}</span>
 
-            <form onSubmit={handleSubmit}>
-              <div className="input-field">
+          <form onSubmit={handleSubmit}>
+            <div className="input-field">
+              <input
+                id="player-name"
+                type="text"
+                value={playerName}
+                onChange={(e) => {
+                  setPlayerName(e.target.value);
+                  setLocalError('');
+                }}
+                placeholder="Your name"
+                maxLength={50}
+                autoFocus
+                disabled={isJoining}
+              />
+              <label htmlFor="player-name" className="active">
+                Your Name
+              </label>
+              {(localError || error) && (
+                <span className="helper-text red-text">{localError || error}</span>
+              )}
+            </div>
+
+            <div className="modal-moderator">
+              <label>
                 <input
-                  id="player-name"
-                  type="text"
-                  value={playerName}
-                  onChange={(e) => {
-                    setPlayerName(e.target.value);
-                    setLocalError('');
-                  }}
-                  placeholder="Your name"
-                  maxLength={50}
-                  autoFocus
+                  type="checkbox"
+                  checked={isModerator}
+                  onChange={(e) => setIsModerator(e.target.checked)}
                   disabled={isJoining}
                 />
-                <label htmlFor="player-name" className="active">
-                  Your Name
-                </label>
-                {(localError || error) && (
-                  <span className="helper-text red-text">{localError || error}</span>
-                )}
-              </div>
+                <span>Moderator (no card selection)</span>
+              </label>
+            </div>
 
-              <div style={{ marginTop: '15px' }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={isModerator}
-                    onChange={(e) => setIsModerator(e.target.checked)}
-                    disabled={isJoining}
-                  />
-                  <span>Join as Moderator (observe only, no card selection)</span>
-                </label>
-              </div>
-
-              <div className="row" style={{ marginTop: '20px', marginBottom: 0 }}>
-                <div className="col s6">
-                  {onCancel && (
-                    <button
-                      type="button"
-                      className="btn-flat waves-effect waves-light grey-text text-darken-2"
-                      onClick={onCancel}
-                      disabled={isJoining}
-                      style={{ width: '100%' }}
-                    >
-                      <i className="material-icons left">arrow_back</i>
-                      Cancel
-                    </button>
-                  )}
-                </div>
-                <div className={onCancel ? 'col s6' : 'col s12'}>
-                  <button
-                    type="submit"
-                    className="btn waves-effect waves-light teal"
-                    disabled={isJoining || !playerName.trim()}
-                    style={{ width: '100%' }}
-                  >
-                    {isJoining ? 'Joining...' : 'Join Room'}
-                    <i className="material-icons right">arrow_forward</i>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
+            <div className="modal-actions">
+              {onCancel && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={onCancel}
+                  disabled={isJoining}
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                type="submit"
+                className="btn btn-accent"
+                disabled={isJoining || !playerName.trim()}
+              >
+                {isJoining ? 'Joining...' : 'Join'}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

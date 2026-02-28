@@ -7,7 +7,6 @@ export default function Footer() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // Read initial theme from document attribute
     const currentTheme = document.documentElement.getAttribute('theme');
     setIsDarkMode(currentTheme === 'dark');
   }, []);
@@ -20,24 +19,22 @@ export default function Footer() {
   };
 
   return (
-    <footer className="page-footer teal lighten-1">
-      <div className="footer-content">
-        <div className="container">
-          <div className="footer-flex">
-            <span className="grey-text text-lighten-3">
-              Scrum Poker v{version}
-            </span>
-            <button
-              onClick={toggleTheme}
-              className="btn-flat white-text theme-toggle"
-              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              <i className="material-icons">
-                {isDarkMode ? 'light_mode' : 'dark_mode'}
-              </i>
-            </button>
-          </div>
+    <footer className="brand-footer">
+      <div className="container">
+        <div className="brand-footer-inner">
+          <span className="brand-footer-version">
+            Scrum Poker v{version}
+          </span>
+          <button
+            onClick={toggleTheme}
+            className="theme-toggle"
+            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <i className="material-icons">
+              {isDarkMode ? 'light_mode' : 'dark_mode'}
+            </i>
+          </button>
         </div>
       </div>
     </footer>

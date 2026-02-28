@@ -48,11 +48,9 @@ export default function Error({ error, reset }: ErrorProps) {
                   onClick={reset}
                 >
                   Try again
-                  <i className="material-icons right">refresh</i>
                 </button>
-                <a href="/" className="btn waves-effect waves-light teal">
+                <a href="/" className="btn btn-primary">
                   Go home
-                  <i className="material-icons right">home</i>
                 </a>
               </div>
             </div>

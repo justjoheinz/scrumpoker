@@ -159,16 +159,35 @@ All WebSocket events are strongly typed in `src/types/socket-events.ts`.
 
 - Loaded via CDN in `src/app/layout.tsx`
 - Material Icons for UI elements
-- Minimal custom styles in `src/app/globals.css`
-- No JavaScript initialization needed for basic components
+- Custom styles in `src/app/globals.css` — Materialize is the structural base, all visual theming is overridden there
 
 **Styling Guidelines:**
-- **Prefer Materialize CSS classes** over custom CSS or inline styles
-- Use Materialize's built-in classes for colors (`teal`, `red-text`, `grey-text`), alignment (`valign-wrapper`), visibility (`hide-on-small-only`, `hide-on-med-and-down`), and layout
-- Use Materialize's responsive breakpoints: `s` (≤600px), `m` (≤992px), `l` (>992px)
-- Only add custom CSS in `globals.css` when Materialize doesn't provide the functionality
-- Avoid inline `style` attributes in components - use CSS classes instead
-- When custom CSS is necessary, use semantic class names and add responsive variants
+- Do **not** use Materialize color utility classes (`teal`, `blue`, `orange`, etc.) — all color is controlled via CSS custom properties
+- Use Materialize's layout/responsive classes (`col`, `row`, `container`, `hide-on-small-only`, etc.)
+- Avoid inline `style` attributes — use semantic CSS classes in `globals.css`
+- Button classes: `.btn-primary` (dark fill), `.btn-accent` (Braun orange), `.btn-secondary` (bordered/transparent)
+- Section headers: `<span className="section-label">` — instrument-label typography (uppercase, spaced, secondary color)
+
+### Dieter Rams / Braun Design System
+
+The UI follows a strict Rams-inspired aesthetic. Key rules:
+
+**Palette** — single accent color, near-monochromatic neutrals:
+- `--color-accent: #E8420A` — the only expressive color; used for confirm actions, selected state, status highlight
+- `--color-bg-page: #F5F4EF` / dark: `#1A1A1A`
+- `--color-bg-card: #FFFFFF` / dark: `#242424`
+- `--color-text-primary: #1A1A1A`, `--color-text-secondary: #6A6A66`
+
+**Shape** — `border-radius: 2px` everywhere, no shadows, `1px solid var(--color-border)` instead
+
+**Typography** — IBM Plex Sans loaded via `next/font/google` as CSS variable `--font-ibm-plex-sans`, applied globally in `globals.css` to override Materialize's Roboto
+
+**Header/Footer** — rendered as card-like elements (`brand-header-inner` / `brand-footer-inner`) with `margin: 0 0.75rem` to align with Materialize's column gutter
+
+**Specificity pitfalls:**
+- Dark mode selector `:root[theme='dark'] .class` has specificity (0,3,0); combined modifiers like `.class.modifier` must be explicitly repeated under the dark mode block
+- Materialize sets teal on `button:focus` — always add explicit `background-color` overrides for custom `<button>` elements that don't use `.btn`
+- Materialize's `.btn:focus` / `.btn:active` rules are overridden globally; custom button classes need their own `:focus` / `:active` overrides
 
 ### Docker Deployment
 

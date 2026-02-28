@@ -25,6 +25,7 @@ export default function GameControls({
   return (
     <div className="card">
       <div className="card-content">
+        <span className="section-label">Controls</span>
         <div
           style={{
             display: "flex",
@@ -35,36 +36,31 @@ export default function GameControls({
         >
           {/* Reveal Button */}
           <button
-            className="btn waves-effect waves-light blue"
+            className="btn btn-accent"
             onClick={onReveal}
             disabled={!canReveal}
             style={{ flex: "1", minWidth: "200px" }}
           >
-            <i className="material-icons left">visibility</i>
-            Reveal Cards
+            Reveal
           </button>
 
           {/* Reset Button */}
           <button
-            className="btn waves-effect waves-light orange"
+            className="btn btn-accent"
             onClick={onReset}
             disabled={!canReset}
             style={{ flex: "1", minWidth: "200px" }}
           >
-            <i className="material-icons left">refresh</i>
-            Reset Game
+            Reset
           </button>
         </div>
 
-        {/* Helper text */}
-        <div style={{ marginTop: "15px" }}>
+        <div className="game-controls-status">
           {!isRevealed && (
-            <p className="grey-text">
-              <i className="material-icons tiny">info</i> {playersWithCards}/
-              {totalPlayers} players have selected cards
-            </p>
+            <span style={playersWithCards > 0 && playersWithCards === totalPlayers ? { color: 'var(--color-accent)' } : undefined}>
+              {playersWithCards}/{totalPlayers} players have selected cards
+            </span>
           )}
-          {isRevealed && <p>&nbsp;</p>}
         </div>
       </div>
     </div>

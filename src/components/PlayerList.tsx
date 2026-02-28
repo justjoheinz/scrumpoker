@@ -21,10 +21,8 @@ export default function PlayerList({
     if (player.card === null) {
       // No card selected
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div className="player-card-placeholder">
-            <span className="grey-text">No card</span>
-          </div>
+        <div className="player-card-placeholder">
+          <span className="grey-text">—</span>
         </div>
       );
     }
@@ -32,30 +30,22 @@ export default function PlayerList({
     if (isRevealed && player.card) {
       // Show actual card value
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div className="poker-card player-card-revealed">
-            {player.card}
-          </div>
+        <div className="player-card-revealed">
+          {player.card}
         </div>
       );
     }
 
-    // Card selected but not revealed - show face down
+    // Card selected but not revealed - flat dark block
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div className="card-face-down">
-          <i className="material-icons">style</i>
-        </div>
-      </div>
+      <div className="card-face-down" />
     );
   };
 
   return (
     <div className="card">
       <div className="card-content">
-        <span className="card-title">
-          Players
-        </span>
+        <span className="section-label">Players</span>
 
         {players.length === 0 ? (
           <p className="grey-text">No players in room yet</p>
@@ -71,14 +61,6 @@ export default function PlayerList({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                   <div>
                     <strong>{player.name}</strong>
-                    {player.id === currentPlayerId && (
-                      <span
-                        className="badge teal white-text"
-                        style={{ marginLeft: '10px' }}
-                      >
-                        You
-                      </span>
-                    )}
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>

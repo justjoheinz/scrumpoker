@@ -20,40 +20,27 @@ export default function CardSelector({
   return (
     <div className="card">
       <div className="card-content">
-        <span className="card-title">Select Your Card</span>
-        {disabled && (
-          <p className="grey-text">
-            <i className="material-icons tiny">lock</i> <strong>Card selection disabled (cards revealed)</strong>
-          </p>)}
-        {!disabled && ( <p>&nbsp;</p>)}
+        <span className="section-label">Select Your Card</span>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
-            gap: '15px',
-            marginTop: '20px',
-          }}
-        >
+        <div className="card-selector-grid">
           {CARD_VALUES.map((card) => (
-            <div
+            <button
               key={card}
-              className={`poker-card card ${selectedCard === card ? 'selected' : ''}`}
-              onClick={() => {
-                if (disabled) return;
-                // Toggle: if clicking selected card, unselect it (pass null)
-                onSelectCard(selectedCard === card ? null : card);
-              }}
-              style={{
-                opacity: disabled ? 0.5 : 1,
-                cursor: disabled ? 'not-allowed' : 'pointer',
-              }}
+              className={`poker-card-btn${selectedCard === card ? ' selected' : ''}`}
+              onClick={() => onSelectCard(selectedCard === card ? null : card)}
+              disabled={disabled}
+              aria-pressed={selectedCard === card}
+              aria-label={`Select ${card}`}
             >
-              <div className="card-content">
-                {card}
-              </div>
-            </div>
+              {card}
+            </button>
           ))}
+        </div>
+
+        <div className="game-controls-status">
+          {disabled && (
+            <span>Cards revealed — selection disabled</span>
+          )}
         </div>
       </div>
     </div>

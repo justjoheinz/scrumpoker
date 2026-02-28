@@ -23,7 +23,7 @@ export default function AdminPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span className="card-title">Server Statistics</span>
                     <button
-                      className="btn waves-effect waves-light teal"
+                      className="btn btn-primary"
                       onClick={refresh}
                       disabled={isLoading}
                     >

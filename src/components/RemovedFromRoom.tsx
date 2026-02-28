@@ -37,9 +37,6 @@ export default function RemovedFromRoom({
       <div className="card" style={{ maxWidth: '600px', width: '90%' }}>
         <div className="card-content">
           <span className="card-title">
-            <i className="material-icons left" style={{ color: 'var(--color-status-orange)' }}>
-              info
-            </i>
             {reason === 'self' ? 'You Left the Room' : 'You Were Removed from the Room'}
           </span>
 
@@ -75,20 +72,18 @@ export default function RemovedFromRoom({
 
         <div className="card-action" style={{ display: 'flex', gap: '10px' }}>
           <button
-            className="btn waves-effect waves-light teal"
+            className="btn btn-accent"
             onClick={handleRejoin}
             style={{ flex: 1 }}
           >
-            <i className="material-icons left">refresh</i>
             Rejoin Room
           </button>
 
           <button
-            className="btn waves-effect waves-light grey"
+            className="btn btn-secondary"
             onClick={handleGoHome}
             style={{ flex: 1 }}
           >
-            <i className="material-icons left">home</i>
             Go to Home
           </button>
         </div>
