@@ -49,6 +49,7 @@ export default function Home() {
                 <div className="card-content">
                   <span className="section-label">New Room</span>
                   <button
+                    id="btn-create-room"
                     className="btn btn-accent"
                     style={{ width: '100%' }}
                     onClick={handleCreateRoom}
@@ -84,6 +85,7 @@ export default function Home() {
                       )}
                     </div>
                     <button
+                      id="btn-join-room"
                       type="submit"
                       className="btn btn-primary"
                       style={{ width: '100%', marginTop: '0.5rem' }}
