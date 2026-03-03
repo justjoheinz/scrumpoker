@@ -45,7 +45,7 @@ npm install
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. Open [http://localhost:3001](http://localhost:3001) in your browser
 
 ## Usage
 
@@ -106,7 +106,7 @@ Docker images are automatically built and published to GitHub Container Registry
 **Run the latest image:**
 
 ```bash
-docker run -d -p 3000:3000 ghcr.io/justjoheinz/scrumpoker:latest
+docker run -d -p 3001:3001 ghcr.io/justjoheinz/scrumpoker:latest
 ```
 
 **Available tags:**
@@ -120,10 +120,10 @@ docker run -d -p 3000:3000 ghcr.io/justjoheinz/scrumpoker:latest
 **Run on a different host port:**
 
 ```bash
-docker run -d -p 8080:3000 ghcr.io/justjoheinz/scrumpoker:latest
+docker run -d -p 8080:3001 ghcr.io/justjoheinz/scrumpoker:latest
 ```
 
-The application listens on port 3000 inside the container. Map it to any host port with `-p <host-port>:3000`.
+The application listens on port 3001 inside the container. Map it to any host port with `-p <host-port>:3001`.
 
 **Stop the container:**
 
@@ -141,7 +141,7 @@ Build and run with Docker:
 docker build -t scrumpoker .
 
 # Run the container
-docker run -p 3000:3000 scrumpoker
+docker run -p 3001:3001 scrumpoker
 ```
 
 Or use Docker Compose:
@@ -161,7 +161,7 @@ NODE_ENV=production npm start
 
 ### Environment Variables
 
-- `PORT`: Server port (default: 3000)
+- `PORT`: Server port (default: 3001)
 - `NODE_ENV`: Environment mode (development/production)
 
 ## Project Structure

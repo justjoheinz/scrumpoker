@@ -42,7 +42,7 @@ COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3001
 
 # Start server
 CMD ["npm", "start"]

@@ -9,8 +9,8 @@ import { createLogger } from './lib/logger';
 const log = createLogger('server');
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
-const port = parseInt(process.env.PORT || '3000', 10);
+const hostname = '0.0.0.0';
+const port = parseInt(process.env.PORT || '3001', 10);
 
 // Initialize Next.js
 const app = next({ dev, hostname, port });

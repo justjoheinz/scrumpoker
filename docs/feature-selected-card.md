@@ -6,3 +6,5 @@ A change is requested that the currently selected card is displayed with a diffe
 
 It is also possible for player to change his decision as long as the cards have not yet been revealed. Clicking on a card which has been selected will unselect it and it is treated as if the player has not made a decision yet. 
 
+Please make sure that a user sees his selected card in the card selector always. Revealing cards will just show the cards face up for everyone.
+

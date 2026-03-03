@@ -226,9 +226,9 @@ Uses `nanoid` for secure, URL-friendly 6-character room codes:
 
 To test multiplayer functionality:
 1. Start server: `npm run dev`
-2. Open `http://localhost:3000` in normal browser
+2. Open `http://localhost:3001` in normal browser
 3. Create room (generates code like `ABC123`)
-4. Open `http://localhost:3000/room/ABC123` in incognito/different browser
+4. Open `http://localhost:3001/room/ABC123` in incognito/different browser
 5. Join with different name
 6. Both clients will see real-time updates
 
@@ -276,7 +276,7 @@ tests/
 ## Deployment Notes
 
 - Designed for Docker deployment on VPS with Node.js support
-- Port 3000 exposed (configurable via `PORT` env var)
+- Port 3001 exposed (configurable via `PORT` env var)
 - No environment variables required (all config in code)
 - WebSockets require persistent connections (not compatible with serverless platforms like Vercel)
 - Server restart loses all room state (by design for stateless requirement)
