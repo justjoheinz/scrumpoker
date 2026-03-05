@@ -60,7 +60,7 @@ export default function RemovedFromRoom({
             <p className="removed-info-text-spaced">
               <strong>Room URL:</strong>{' '}
               <code className="removed-code">
-                {window.location.origin}/room/{roomCode}
+                {window.location.origin}{process.env.NEXT_PUBLIC_BASE_PATH || ''}/room/{roomCode}
               </code>
             </p>
           </div>

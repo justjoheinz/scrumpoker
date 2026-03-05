@@ -1,10 +1,18 @@
 services:
   scrumpoker:
-    build: .
-    ports:
-      - "3001:3001"
+    build:
+      context: .
+      args:
+        BASE_PATH: /scrumpoker
     environment:
       - NODE_ENV=production
-      - PORT=3001
       - NEXT_TELEMETRY_DISABLED=1
+    restart: unless-stopped
+
+  apache:
+    build: ./apache
+    ports:
+      - "80:80"
+    depends_on:
+      - scrumpoker
     restart: unless-stopped

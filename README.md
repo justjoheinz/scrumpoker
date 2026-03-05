@@ -99,60 +99,47 @@ npm run dev
 
 ## Deployment
 
-### Using Pre-built Docker Images
+### Docker Compose (with Apache reverse proxy)
 
-Docker images are automatically built and published to GitHub Container Registry on every push to `main`. Images are available for both `linux/amd64` and `linux/arm64` architectures.
-
-**Run the latest image:**
+The default `docker-compose.yml` builds and runs the app behind an Apache reverse proxy, serving it at `/scrumpoker` on port 80:
 
 ```bash
-docker run -d -p 3001:3001 ghcr.io/justjoheinz/scrumpoker:latest
+docker compose up -d
 ```
 
-**Available tags:**
+This starts two services:
+- **scrumpoker** — the Node.js app (not exposed to the host directly)
+- **apache** — proxies `http://host/scrumpoker` → the app, including WebSocket upgrade for Socket.io
 
-| Tag | Description |
-|-----|-------------|
-| `latest` | Latest build from main branch |
-| `main` | Same as latest |
-| `sha-<commit>` | Specific commit (e.g., `sha-abc1234`) |
+Open `http://localhost/scrumpoker` in your browser.
 
-**Run on a different host port:**
+### Serving at a Custom Path
+
+The path prefix is controlled by a single Docker build arg `BASE_PATH`. To change it, pass the arg at build time:
 
 ```bash
-docker run -d -p 8080:3001 ghcr.io/justjoheinz/scrumpoker:latest
+docker compose build --build-arg BASE_PATH=/myapp
 ```
 
-The application listens on port 3001 inside the container. Map it to any host port with `-p <host-port>:3001`.
-
-**Stop the container:**
+Or set it directly with `docker build`:
 
 ```bash
-docker ps  # Find container ID
-docker stop <container-id>
+docker build --build-arg BASE_PATH=/scrumpoker -t scrumpoker .
 ```
 
-### Build Docker Image Locally
+To serve at root (no prefix), omit `BASE_PATH` or set it to an empty string.
 
-Build and run with Docker:
+### Build Docker Image Locally (root path)
 
 ```bash
-# Build the image
+# Build without a path prefix
 docker build -t scrumpoker .
 
 # Run the container
 docker run -p 3001:3001 scrumpoker
 ```
 
-Or use Docker Compose:
-
-```bash
-docker-compose up -d
-```
-
-### Production Build
-
-Build for production:
+### Production Build (without Docker)
 
 ```bash
 npm run build
@@ -161,8 +148,11 @@ NODE_ENV=production npm start
 
 ### Environment Variables
 
-- `PORT`: Server port (default: 3001)
-- `NODE_ENV`: Environment mode (development/production)
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3001` | Server port |
+| `NODE_ENV` | — | `development` or `production` |
+| `NEXT_PUBLIC_BASE_PATH` | `""` | URL path prefix (set via `BASE_PATH` build arg in Docker) |
 
 ## Project Structure
 
@@ -192,6 +182,9 @@ scrumpoker/
 │   │   ├── game.ts
 │   │   └── socket-events.ts
 │   └── server.ts              # Custom server entry point
+├── apache/                    # Apache reverse proxy (Docker)
+│   ├── Dockerfile
+│   └── scrumpoker.conf        # VHost: proxy + WebSocket upgrade
 ├── docs/                      # Documentation
 │   ├── clarifications.md
 │   └── requirements.md

@@ -37,6 +37,7 @@ export function useSocket(): UseSocketReturn {
   useEffect(() => {
     // Create socket connection
     const socketInstance = io({
+      path: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/socket.io`,
       transports: ['websocket', 'polling'],
     });
 

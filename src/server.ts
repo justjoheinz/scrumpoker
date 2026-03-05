@@ -46,7 +46,9 @@ app.prepare().then(() => {
   });
 
   // Create Socket.io server
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const io = new SocketIOServer(httpServer, {
+    path: `${basePath}/socket.io`,
     cors: {
       origin: dev ? '*' : false, // Allow all origins in dev, restrict in production
       methods: ['GET', 'POST'],

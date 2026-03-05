@@ -13,6 +13,10 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 # Copy source code
 COPY . .
 
+# Build-time base path arg (e.g. /scrumpoker)
+ARG BASE_PATH=""
+ENV NEXT_PUBLIC_BASE_PATH=${BASE_PATH}
+
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -23,6 +27,10 @@ RUN npm run build
 FROM node:20-alpine AS runner
 
 WORKDIR /app
+
+# Build-time base path arg must be redeclared in each stage
+ARG BASE_PATH=""
+ENV NEXT_PUBLIC_BASE_PATH=${BASE_PATH}
 
 # Set environment
 ENV NODE_ENV=production

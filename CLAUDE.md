@@ -195,6 +195,14 @@ The UI follows a strict Rams-inspired aesthetic. Key rules:
 1. Builder stage: Install all deps + build Next.js
 2. Runner stage: Install production deps only + copy built assets
 
+**`BASE_PATH` build arg** controls the URL prefix end-to-end:
+- Declared as `ARG BASE_PATH=""` in **both** stages (ARGs don't cross stage boundaries)
+- Set as `ENV NEXT_PUBLIC_BASE_PATH=${BASE_PATH}` in both stages
+- `next.config.js` reads it → sets `basePath` + `assetPrefix` at build time
+- `server.ts` reads it at runtime → sets Socket.io server `path`
+- `useSocket.ts` reads `NEXT_PUBLIC_BASE_PATH` (inlined into the bundle) → sets Socket.io client `path`
+- Default is `""` (serve at root); set to `/scrumpoker` in `docker-compose.yml`
+
 **Critical files copied to production:**
 - `.next/` - Next.js build output
 - `src/` - TypeScript source (for tsx)
@@ -202,6 +210,16 @@ The UI follows a strict Rams-inspired aesthetic. Key rules:
 - `next.config.js`, `package.json`
 
 `.dockerignore` prevents copying local `node_modules` (platform-specific binaries).
+
+### Apache Reverse Proxy (`apache/`)
+
+`docker-compose.yml` runs a second `apache` service alongside `scrumpoker`. The app container is not published to the host; Apache is the only public entry point (port 80).
+
+`apache/scrumpoker.conf` handles two cases:
+1. **WebSocket** (`Upgrade: websocket` header) — `RewriteRule` with `[P,L]` to `ws://scrumpoker:3001/scrumpoker/...`
+2. **HTTP** — `ProxyPass /scrumpoker` → `http://scrumpoker:3001/scrumpoker`
+
+`apache/Dockerfile` enables the required modules (`proxy`, `proxy_http`, `proxy_wstunnel`, `rewrite`) via `sed` on the default `httpd.conf`.
 
 ## Room Code Generation
 
@@ -276,8 +294,9 @@ tests/
 ## Deployment Notes
 
 - Designed for Docker deployment on VPS with Node.js support
-- Port 3001 exposed (configurable via `PORT` env var)
-- No environment variables required (all config in code)
+- Default `docker-compose.yml` serves at `/scrumpoker` via Apache on port 80; the app container (port 3001) is not exposed to the host
+- `BASE_PATH` Docker build arg (default `""`) drives all path configuration — Next.js `basePath`/`assetPrefix`, Socket.io server `path`, Socket.io client `path`
 - WebSockets require persistent connections (not compatible with serverless platforms like Vercel)
 - Server restart loses all room state (by design for stateless requirement)
+- CI no longer builds/pushes a Docker image — images must be built with a deployment-specific `BASE_PATH` arg at deploy time
 
