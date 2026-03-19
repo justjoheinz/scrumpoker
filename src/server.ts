@@ -3,7 +3,6 @@ import { parse } from 'url';
 import next from 'next';
 import { Server as SocketIOServer } from 'socket.io';
 import { setupSocketHandlers } from './lib/socket/handlers';
-import { getAdminStats } from './lib/game/room-manager';
 import { createLogger } from './lib/logger';
 
 const log = createLogger('server');
@@ -11,6 +10,7 @@ const log = createLogger('server');
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = '0.0.0.0';
 const port = parseInt(process.env.PORT || '3001', 10);
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 // Initialize Next.js
 const app = next({ dev, hostname, port });
@@ -23,17 +23,9 @@ app.prepare().then(() => {
       const parsedUrl = parse(req.url!, true);
 
       // Health check endpoint
-      if (parsedUrl.pathname === '/health' && req.method === 'GET') {
+      if (parsedUrl.pathname === `${basePath}/health` && req.method === 'GET') {
         res.statusCode = 200;
         res.end('OK');
-        return;
-      }
-
-      // Handle admin stats API directly to access server-side room state
-      if (parsedUrl.pathname === '/api/admin/stats' && req.method === 'GET') {
-        const stats = getAdminStats();
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(stats));
         return;
       }
 
@@ -46,7 +38,6 @@ app.prepare().then(() => {
   });
 
   // Create Socket.io server
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const io = new SocketIOServer(httpServer, {
     path: `${basePath}/socket.io`,
     cors: {
