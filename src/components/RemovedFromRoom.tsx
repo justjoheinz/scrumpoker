@@ -47,8 +47,8 @@ export default function RemovedFromRoom({
               </>
             ) : (
               <>
-                <strong>{playerName}</strong>, you have been removed from the room by another
-                player.
+                <strong>{playerName}</strong>, you have been removed from the room by a
+                moderator.
               </>
             )}
           </p>

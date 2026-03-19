@@ -10,12 +10,16 @@ interface PlayerListProps {
   players: Player[];
   currentPlayerId: string | null;
   isRevealed: boolean;
+  currentPlayerIsModerator: boolean;
+  onRemovePlayer: (playerId: string) => void;
 }
 
 export default function PlayerList({
   players,
   currentPlayerId,
   isRevealed,
+  currentPlayerIsModerator,
+  onRemovePlayer,
 }: PlayerListProps) {
   const renderCardStatus = (player: Player) => {
     if (player.card === null) {
@@ -63,8 +67,18 @@ export default function PlayerList({
                     <strong>{player.name}</strong>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     {renderCardStatus(player)}
+                    {currentPlayerIsModerator && player.id !== currentPlayerId && (
+                      <button
+                        className="player-remove-btn"
+                        onClick={() => onRemovePlayer(player.id)}
+                        aria-label={`Remove ${player.name} from room`}
+                        title={`Remove ${player.name}`}
+                      >
+                        <i className="material-icons">close</i>
+                      </button>
+                    )}
                   </div>
                 </div>
               </li>
