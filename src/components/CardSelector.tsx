@@ -18,7 +18,7 @@ export default function CardSelector({
   disabled,
 }: CardSelectorProps) {
   return (
-    <div className="card">
+    <div id="card-selector" className="card">
       <div className="card-content">
         <span className="section-label">Select Your Card</span>
 
@@ -26,11 +26,13 @@ export default function CardSelector({
           {CARD_VALUES.map((card) => (
             <button
               key={card}
+              id={`card-${card}`}
               className={`poker-card-btn${selectedCard === card ? ' selected' : ''}`}
               onClick={() => onSelectCard(selectedCard === card ? null : card)}
               disabled={disabled}
               aria-pressed={selectedCard === card}
               aria-label={`Select ${card}`}
+              data-testid={`card-${card}`}
             >
               {card}
             </button>

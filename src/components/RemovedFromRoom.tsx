@@ -33,10 +33,10 @@ export default function RemovedFromRoom({
   };
 
   return (
-    <div className="removed-overlay">
+    <div id="removed-from-room-overlay" className="removed-overlay">
       <div className="card" style={{ maxWidth: '600px', width: '90%' }}>
         <div className="card-content">
-          <span className="card-title">
+          <span id="removed-title" className="card-title">
             {reason === 'self' ? 'You Left the Room' : 'You Were Removed from the Room'}
           </span>
 
@@ -72,6 +72,7 @@ export default function RemovedFromRoom({
 
         <div className="card-action" style={{ display: 'flex', gap: '10px' }}>
           <button
+            id="rejoin-room-button"
             className="btn btn-accent"
             onClick={handleRejoin}
             style={{ flex: 1 }}

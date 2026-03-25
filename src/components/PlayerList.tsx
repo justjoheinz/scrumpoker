@@ -25,7 +25,7 @@ export default function PlayerList({
     if (player.card === null) {
       // No card selected
       return (
-        <div className="player-card-placeholder">
+        <div className="player-card-placeholder" data-testid={`${player.name}-card-placeholder`}>
           <span className="grey-text">—</span>
         </div>
       );
@@ -34,7 +34,7 @@ export default function PlayerList({
     if (isRevealed && player.card) {
       // Show actual card value
       return (
-        <div className="player-card-revealed">
+        <div className="player-card-revealed" data-testid={`${player.name}-card-revealed`} data-card-value={player.card}>
           {player.card}
         </div>
       );
@@ -42,12 +42,12 @@ export default function PlayerList({
 
     // Card selected but not revealed - flat dark block
     return (
-      <div className="card-face-down" />
+      <div className="card-face-down" data-testid={`${player.name}-card-hidden`} />
     );
   };
 
   return (
-    <div className="card">
+    <div id="players-section" className="card">
       <div className="card-content">
         <span className="section-label">Players</span>
 
@@ -71,10 +71,12 @@ export default function PlayerList({
                     {renderCardStatus(player)}
                     {currentPlayerIsModerator && player.id !== currentPlayerId && (
                       <button
+                        id={`remove-player-${player.id}`}
                         className="player-remove-btn"
                         onClick={() => onRemovePlayer(player.id)}
                         aria-label={`Remove ${player.name} from room`}
                         title={`Remove ${player.name}`}
+                        data-testid={`remove-${player.name.replace(/\s+/g, '-').toLowerCase()}`}
                       >
                         <i className="material-icons">close</i>
                       </button>
