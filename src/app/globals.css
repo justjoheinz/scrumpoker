@@ -856,6 +856,35 @@ main {
   color: var(--color-text-secondary);
 }
 
+/* ── Player remove button ────────────────────────────────────── */
+
+.player-remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 2px;
+  color: var(--color-text-secondary);
+  transition: color 0.15s, background-color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-remove-btn:hover {
+  color: var(--color-status-red);
+  background-color: var(--color-bg-info-box);
+}
+
+.player-remove-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.player-remove-btn i {
+  font-size: 20px;
+}
+
 /* ── PlayerList revealed card badge ─────────────────────────── */
 
 .player-card-revealed {

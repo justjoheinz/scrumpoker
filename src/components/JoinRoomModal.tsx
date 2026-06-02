@@ -89,6 +89,7 @@ export default function JoinRoomModal({
             <div className="modal-moderator">
               <label>
                 <input
+                  id="moderator-checkbox"
                   type="checkbox"
                   checked={isModerator}
                   onChange={(e) => setIsModerator(e.target.checked)}
@@ -110,6 +111,7 @@ export default function JoinRoomModal({
                 </button>
               )}
               <button
+                id="join-room-button"
                 type="submit"
                 className="btn btn-accent"
                 disabled={isJoining || !playerName.trim()}

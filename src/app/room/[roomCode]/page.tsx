@@ -78,6 +78,10 @@ export default function RoomPage() {
     resetGame(roomCode);
   };
 
+  const handleRemovePlayer = (playerId: string) => {
+    removePlayer(roomCode, playerId);
+  };
+
   // Get stored player name for removed from room message
   const storedPlayerName = typeof window !== 'undefined'
     ? sessionStorage.getItem(`player_${roomCode}_name`) || 'Player'
@@ -170,6 +174,8 @@ export default function RoomPage() {
                 players={visiblePlayers}
                 currentPlayerId={gameState.currentPlayerId}
                 isRevealed={gameState.isRevealed}
+                currentPlayerIsModerator={isModerator}
+                onRemovePlayer={handleRemovePlayer}
               />
             )}
           </div>
