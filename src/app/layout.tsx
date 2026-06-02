@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={ibmPlexSans.variable} style={{ colorScheme: 'light dark' }}>
+    <html lang="en" className={ibmPlexSans.variable} style={{ colorScheme: 'light dark' }} suppressHydrationWarning>
       <head>
         {/* Theme detection - runs before render to prevent flash */}
         <script dangerouslySetInnerHTML={{ __html: `
