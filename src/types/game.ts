@@ -35,7 +35,7 @@ export interface Player {
 }
 
 export interface Room {
-  code: string; // room code (6-char alphanumeric)
+  code: string; // room code (3–30 alphanumeric characters)
   players: Map<string, Player>; // playerId -> Player
   isRevealed: boolean; // whether cards are face up
   createdAt: number; // timestamp

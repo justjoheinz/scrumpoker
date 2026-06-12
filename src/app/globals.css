@@ -434,6 +434,13 @@ header.brand-header {
   opacity: 0.7;
 }
 
+.room-code-copy strong {
+  max-width: 16ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .nav-leave {
   display: flex;
   align-items: center;
