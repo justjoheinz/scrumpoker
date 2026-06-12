@@ -28,9 +28,9 @@ export default function Home() {
       return;
     }
 
-    const codePattern = /^[A-Za-z0-9]{3,10}$/;
+    const codePattern = /^[A-Za-z0-9]{3,30}$/;
     if (!codePattern.test(roomCode.trim())) {
-      setError('Room code must be 3–10 alphanumeric characters');
+      setError('Room code must be 3–30 alphanumeric characters');
       return;
     }
 
@@ -73,8 +73,8 @@ export default function Home() {
                           setRoomCode(e.target.value);
                           setError('');
                         }}
-                        placeholder="ABC123"
-                        maxLength={10}
+                        placeholder="SPRINT42"
+                        maxLength={30}
                         autoComplete="off"
                       />
                       <label htmlFor="room-code" className="active">

@@ -42,4 +42,19 @@ test.describe('Home Page', () => {
     await page.locator('#btn-join-room').click();
     await expect(page.getByText('Room code must be 3')).toBeVisible();
   });
+
+  test('should navigate to room when entering a 30-character code', async ({ page }) => {
+    const longCode = 'ABCDEFGHIJ12345678901234567890';
+    await page.goto('/');
+    await page.locator('#room-code').fill(longCode);
+    await page.locator('#btn-join-room').click();
+    await expect(page).toHaveURL(`/room/${longCode.toUpperCase()}`);
+  });
+
+  test('should reject a 31-character room code', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#room-code').fill('ABCDEFGHIJ123456789012345678901');
+    await page.locator('#btn-join-room').click();
+    await expect(page.getByText('Room code must be 3–30 alphanumeric characters')).toBeVisible();
+  });
 });
